@@ -34,7 +34,9 @@ build:
 
 test:
   stage: test
-  script: gradle check
+  script:
+    - cd ./springblog
+    - gradle check
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
