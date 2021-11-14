@@ -59,13 +59,9 @@ public class CSVToXML {
 
             String[] headers = lines.get(0);
             String[] headersCamelCase = new String[headers.length];
-            int idIndex = -1;
             for (int i = 0; i < headers.length; i++) {
                 String header = snakeToCamelCase(headers[i]);
                 headersCamelCase[i] = header;
-                if(idIndex==-1 && header.equals("id")) {
-                    idIndex = i;
-                }
             }
 
             StringBuilder xmlFile = new StringBuilder();
@@ -73,12 +69,9 @@ public class CSVToXML {
             xmlFile.append("<beans xmlns=\"http://www.springframework.org/schema/beans\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd\">\n");
             for (int i = 1; i < lines.size(); i++) {
                 String[] line = lines.get(i);
-                String id = idIndex>=0 ? line[idIndex] : String.valueOf(i);
-                xmlFile.append(String.format("\t<bean id=\"%s\" class=\"%s.%s\">\n", id, beansPackage, className));
+                xmlFile.append(String.format("\t<bean id=\"%s%d\" class=\"%s.%s\">\n", className, i-1, beansPackage, className));
                 for (int j = 0; j < line.length; j++) {
-                    if(j!=idIndex) {
-                        xmlFile.append(String.format("\t\t<constructor-arg name=\"%s\" value=\"%s\"></constructor-arg>\n", headersCamelCase[j], line[j]));
-                    }
+                    xmlFile.append(String.format("\t\t<constructor-arg name=\"%s\" value=\"%s\"></constructor-arg>\n", headersCamelCase[j], line[j]));
                 }
                 xmlFile.append("\t</bean>\n");
             }
