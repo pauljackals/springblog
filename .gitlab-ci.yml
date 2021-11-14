@@ -18,12 +18,13 @@ variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 before_script:
-  - cd ./springblog
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-build:
+build_springblog:
   stage: build
-  script: gradle --build-cache assemble
+  script:
+    - cd ./springblog
+    - gradle --build-cache assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -31,9 +32,11 @@ build:
       - build
       - .gradle
 
-test:
+test_springblog:
   stage: test
-  script: gradle check
+  script:
+    - cd ./springblog
+    - gradle check
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
