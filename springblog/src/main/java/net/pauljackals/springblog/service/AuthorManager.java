@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import lombok.Getter;
@@ -16,7 +15,6 @@ import net.pauljackals.springblog.domain.PostAuthor;
 
 @Getter
 @Service
-@Order(1)
 public class AuthorManager {
     private List<Author> authors;
 

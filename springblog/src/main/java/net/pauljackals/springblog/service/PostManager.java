@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import lombok.Getter;
@@ -14,12 +13,14 @@ import net.pauljackals.springblog.domain.Post;
 
 @Service
 @Getter
-@Order(2)
 public class PostManager {
     private List<Post> posts;
     
     public PostManager(@Autowired List<Post> posts) {
         this.posts = Collections.synchronizedList(new ArrayList<>());
+        for (Post post : posts) {
+            addPost(post, true);
+        }
     }
 
     public Post addPost(Post post, boolean isFromCSV) {
