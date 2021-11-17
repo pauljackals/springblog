@@ -16,6 +16,7 @@ public class Post {
     @NonNull private String id;
     @NonNull private String postContent;
     @NonNull private String tags;
+    private List<Author> authors = Collections.synchronizedList(new ArrayList<>());
     private List<Attachment> attachments = Collections.synchronizedList(new ArrayList<>());
     private List<Comment> comments = Collections.synchronizedList(new ArrayList<>());
     private int idCSV = -1;
@@ -24,6 +25,10 @@ public class Post {
         this.postContent = postContent;
         this.tags = tags;
         this.idCSV = idCSV;
+    }
+
+    public void addAuthor(Author author) {
+        authors.add(author);
     }
 
     public void addAttachment(Attachment attachment) {
