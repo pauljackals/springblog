@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.Getter;
+import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Post;
 
 @Service
@@ -16,9 +17,19 @@ import net.pauljackals.springblog.domain.Post;
 public class PostManager {
     private List<Post> posts;
     
-    public PostManager(@Autowired List<Post> posts) {
+    public PostManager(
+        @Autowired List<Post> posts,
+        @Autowired AttachmentManager attachmentManager
+    ) {
         this.posts = Collections.synchronizedList(new ArrayList<>());
+        List<Attachment> attachments = attachmentManager.getAttachments();
         for (Post post : posts) {
+            int idPostCSV = post.getIdCSV();
+            for (Attachment attachment : attachments) {
+                if(attachment.getIdPostCSV() == idPostCSV) {
+                    post.addAttachment(attachment);
+                }
+            }
             addPost(post, true);
         }
     }

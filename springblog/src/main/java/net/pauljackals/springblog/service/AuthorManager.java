@@ -24,6 +24,7 @@ public class AuthorManager {
         @Autowired PostManager postManager
     ) {
         this.authors = Collections.synchronizedList(new ArrayList<>());
+        List<Post> posts = postManager.getPosts();
         for (Author author : authors) {
             int authorIdCSV = author.getIdCSV();
             List<Integer> authorCurrentPostsIds = new ArrayList<>();
@@ -33,7 +34,6 @@ public class AuthorManager {
                 }
             }
             if(authorCurrentPostsIds.size() > 0) {
-                List<Post> posts = postManager.getPosts();
                 int counter = authorCurrentPostsIds.size();
                 for (int i=0; i<posts.size(); i++) {
                     Post post = posts.get(i);
