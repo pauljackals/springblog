@@ -8,17 +8,24 @@
     <title th:text="${title}"></title>
 </head>
 <body>
-    <div class="posts">
-        <div th:each="post : ${posts}" class="post">
+    <div class="post-details">
+        <div class="post">
             <div class="authors">
                 <span th:each="author : ${post.getAuthors()}" th:text="${author.getUsername()}" class="author"></span>
             </div>
             <p th:text="${post.getPostContent()}"></p>
-            <a th:href="@{/post/{id}(id=${post.getId()})}"><span th:text="${textComments + '(' + post.getComments().size() + ')'}"></span></a>
             <ul>
                 <li th:each="attachment : ${post.getAttachments()}" th:text="${attachment.getFilename()}"></li>
             </ul>
             <p th:text="${post.getTags()}" class="tags"></p>
+        </div>
+        <div class="comments">
+            <div th:each="comment : ${post.getComments()}" class="comment">
+                <div class="author-wrapper">
+                    <span th:text="${comment.getUsername()}" class="author"></span>
+                </div>
+                <p th:text="${comment.getCommentContent()}"></p>
+            </div>
         </div>
     </div>
 </body>

@@ -69,6 +69,17 @@ public class PostManager {
         }
     }
 
+    public Post getPost(String id) {
+        Post postToReturn = null;
+        for (Post post : posts) {
+            if(post.getId().equals(id)) {
+                postToReturn = post;
+                break;
+            }
+        }
+        return postToReturn;
+    }
+
     public Post addPost(Post post, boolean isFromCSV) {
         Post postNew;
         if(!isFromCSV) {
