@@ -72,7 +72,7 @@ public class CSVToXML {
                 xmlFile.append(String.format("\t<bean id=\"%s%d\" class=\"%s.%s\">\n", className, i-1, beansPackage, className));
                 for (int j = 0; j < line.length; j++) {
                     String name = headersCamelCase[j];
-                    if(name.contains("id")) {
+                    if(name.equals("id")) {
                         name += "CSV";
                     }
                     xmlFile.append(String.format("\t\t<constructor-arg name=\"%s\" value=\"%s\"></constructor-arg>\n", name, line[j]));

@@ -33,19 +33,19 @@ public class PostManager {
         List<Comment> comments = commentManager.getComments();
 
         for (Post post : posts) {
-            int idPostCSV = post.getIdCSV();
+            int idPost = post.getIdCSV();
             List<Integer> postCurrentAuthorsIds = new ArrayList<>();
             for (PostAuthor postAuthor : postsAuthors) {
-                if(idPostCSV == postAuthor.getIdPostCSV()) {
-                    postCurrentAuthorsIds.add(postAuthor.getIdAuthorCSV());
+                if(idPost == postAuthor.getIdPost()) {
+                    postCurrentAuthorsIds.add(postAuthor.getIdAuthor());
                 }
             }
             if(postCurrentAuthorsIds.size() > 0) {
                 int counter = postCurrentAuthorsIds.size();
                 for (int i=0; i<authors.size(); i++) {
                     Author author = authors.get(i);
-                    int idAuthorCSV = author.getIdCSV();
-                    if(postCurrentAuthorsIds.contains(idAuthorCSV)) {
+                    int idAuthor = author.getIdCSV();
+                    if(postCurrentAuthorsIds.contains(idAuthor)) {
                         post.addAuthor(author);
                         counter--;
                     }
@@ -56,12 +56,12 @@ public class PostManager {
             }
 
             for (Attachment attachment : attachments) {
-                if(attachment.getIdPostCSV() == idPostCSV) {
+                if(attachment.getIdPost() == idPost) {
                     post.addAttachment(attachment);
                 }
             }
             for (Comment comment : comments) {
-                if(comment.getIdPostCSV() == idPostCSV) {
+                if(comment.getIdPost() == idPost) {
                     post.addComment(comment);
                 }
             }

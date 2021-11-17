@@ -11,10 +11,10 @@ import lombok.RequiredArgsConstructor;
 public class Attachment {
     @NonNull private String id;
     @NonNull private String filename;
-    private int idPostCSV = -1;
+    private int idPost = -1;
 
-    public Attachment(int idPostCSV, @NonNull String filename) {
+    public Attachment(int idPost, @NonNull String filename) {
         this.filename = filename;
-        this.idPostCSV = idPostCSV;
+        this.idPost = idPost;
     }
 }

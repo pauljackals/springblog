@@ -13,12 +13,12 @@ public class Comment {
     @NonNull private String username;
     @NonNull private String commentContent;
     private int idCSV = -1;
-    private int idPostCSV = -1;
+    private int idPost = -1;
 
-    public Comment(int idCSV, int idPostCSV, @NonNull String username, @NonNull String commentContent) {
+    public Comment(int idCSV, int idPost, @NonNull String username, @NonNull String commentContent) {
         this.username = username;
         this.commentContent = commentContent;
         this.idCSV = idCSV;
-        this.idPostCSV = idPostCSV;
+        this.idPost = idPost;
     }
 }

@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PostAuthor {
-    int idAuthorCSV = -1;
-    int idPostCSV = -1;
+    int idAuthor = -1;
+    int idPost = -1;
 }
