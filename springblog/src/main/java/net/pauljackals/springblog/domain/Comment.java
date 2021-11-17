@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 public class Comment {
     @NonNull private String id;
     @NonNull private String username;
-    @NonNull private Post post;
     @NonNull private String commentContent;
     private int idCSV = -1;
     private int idPostCSV = -1;

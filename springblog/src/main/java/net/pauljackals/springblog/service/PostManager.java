@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.Getter;
 import net.pauljackals.springblog.domain.Attachment;
+import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 
 @Service
@@ -19,15 +20,22 @@ public class PostManager {
     
     public PostManager(
         @Autowired List<Post> posts,
-        @Autowired AttachmentManager attachmentManager
+        @Autowired AttachmentManager attachmentManager,
+        @Autowired CommentManager commentManager
     ) {
         this.posts = Collections.synchronizedList(new ArrayList<>());
         List<Attachment> attachments = attachmentManager.getAttachments();
+        List<Comment> comments = commentManager.getComments();
         for (Post post : posts) {
             int idPostCSV = post.getIdCSV();
             for (Attachment attachment : attachments) {
                 if(attachment.getIdPostCSV() == idPostCSV) {
                     post.addAttachment(attachment);
+                }
+            }
+            for (Comment comment : comments) {
+                if(comment.getIdPostCSV() == idPostCSV) {
+                    post.addComment(comment);
                 }
             }
             addPost(post, true);
