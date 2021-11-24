@@ -10,7 +10,7 @@
 <body>
     <div class="post-details">
         <a th:href="@{${'/#post_' + post.getId()}}"><button>back</button></a>
-        <div th:replace="fragments/post"></div>
+        <th:block th:insert="fragments/post"></th:block>
         <div class="form-comment">
             <form action="#" method="post" th:action="@{/post/{idPost}/comment(idPost=${post.getId()})}" th:object="${commentTemplate}">
                 <input type="hidden" th:field="*{id}">

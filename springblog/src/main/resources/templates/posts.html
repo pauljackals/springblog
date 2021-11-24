@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="posts">
-        <div th:each="post : ${posts}" th:insert="fragments/post" th:remove="tag"></div>
+        <th:block th:each="post : ${posts}" th:insert="fragments/post"></th:block>
     </div>
 </body>
 </html>
