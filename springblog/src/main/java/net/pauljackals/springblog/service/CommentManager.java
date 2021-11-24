@@ -60,4 +60,12 @@ public class CommentManager {
         }
         return comment;
     }
+
+    public Comment updateComment(String id, Comment commentUpdated) {
+        Comment comment = getComment(id);
+        if(comment != null) {
+            comment.setCommentContent(commentUpdated.getCommentContent());
+        }
+        return comment;
+    }
 }

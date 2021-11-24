@@ -3,16 +3,16 @@
 <head>
 </head>
 <body>
-    <div class="post" th:attr="id=${'post_' + post.getId()}">
+    <div class="post" th:attr="id=${'p_' + post.id}">
         <div class="authors">
-            <span th:each="author : ${post.getAuthors()}" th:text="${author.getUsername()}" class="author"></span>
+            <span th:each="author : ${post.authors}" th:text="${author.username}" class="author"></span>
         </div>
-        <p th:text="${post.getPostContent()}"></p>
-        <a th:if="${posts!=null}" th:href="@{/post/{id}(id=${post.getId()})}"><span th:text="${textComments + '(' + post.getComments().size() + ')'}"></span></a>
+        <p th:text="${post.postContent}"></p>
+        <a th:if="${posts!=null}" th:href="@{/post/{id}(id=${post.id})}"><span th:text="${textComments + '(' + post.comments.size() + ')'}"></span></a>
         <ul>
-            <li th:each="attachment : ${post.getAttachments()}" th:text="${attachment.getFilename()}"></li>
+            <li th:each="attachment : ${post.attachments}" th:text="${attachment.filename}"></li>
         </ul>
-        <p th:text="${post.getTags()}" class="tags"></p>
+        <p th:text="${post.tags}" class="tags"></p>
     </div>
 </body>
 </html>

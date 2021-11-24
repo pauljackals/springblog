@@ -1,5 +1,6 @@
 package net.pauljackals.springblog.controller.web;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,11 @@ public class PostController {
 
     @GetMapping("/")
     public String getPosts(Model model) {
+        List<Post> posts = postManager.getPosts();
+
         model.addAllAttributes(Map.ofEntries(
             Map.entry("textComments", "comments"),
-            Map.entry("posts", postManager.getPosts())
+            Map.entry("posts", posts)
         ));
         return "posts";
     }

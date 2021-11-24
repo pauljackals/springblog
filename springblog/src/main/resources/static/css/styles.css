@@ -29,7 +29,6 @@
     font-style: italic;
 }
 
-
 .post-details {
     display: flex;
     flex-direction: column;
@@ -38,8 +37,9 @@
 .comments {
     display: flex;
     flex-direction: column-reverse;
+    margin-top: 30px;
 }
-.comment {
+.comment, .form-comment {
     width: 500px;
     border: 1px solid black;
     padding: 10px;
@@ -49,25 +49,25 @@
     border-bottom: 1px solid black;
 }
 
-.form-comment {
-    border: 1px solid black;
-    padding: 15px;
-    margin-bottom: 20px;
-}
-.form-comment input {
+.form-comment input,
+.form-comment-edit input {
     display: block;
 }
-.form-comment textarea {
+.form-comment textarea,
+.form-comment-edit textarea {
     display: block;
-    width: 400px;
-    height: 50px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 80px;
     resize: none;
 }
-.form-comment input[type="submit"] {
+.form-comment input[type="submit"],
+.form-comment-edit input[type="submit"] {
     margin-left: auto;
 }
-.form-comment input:not(:last-child), .form-comment textarea {
-    margin-bottom: 10px;
+.form-comment input:not(:first-child), .form-comment textarea,
+.form-comment-edit input:not(:first-child), .form-comment-edit textarea {
+    margin-top: 10px;
 }
 
 .config-buttons-wrapper {

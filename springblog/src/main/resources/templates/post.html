@@ -9,26 +9,42 @@
 </head>
 <body>
     <div class="post-details">
-        <a th:href="@{${'/#post_' + post.getId()}}"><button>back</button></a>
+        <a th:href="@{${'/#p_' + post.id}}"><button>back</button></a>
         <th:block th:insert="fragments/post"></th:block>
         <div class="form-comment">
-            <form action="#" method="post" th:action="@{/post/{idPost}/comment(idPost=${post.getId()})}" th:object="${commentTemplate}">
-                <input type="hidden" th:field="*{id}">
+            <form action="#" method="post" th:action="@{/post/{idPost}/comment(idPost=${post.id})}" th:object="${commentTemplate}">
                 <input type="text" th:field="*{username}" placeholder="username">
                 <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
                 <input type="submit" value="send">
             </form>
         </div>
         <div class="comments">
-            <div th:each="comment : ${post.getComments()}" class="comment">
+            <div th:each="comment : ${post.comments}" class="comment" th:attr="id=${'c_' + comment.id}" th:with="isEdited=${commentEdited!=null && commentEdited.id.equals(comment.id)}">
                 <div class="config-buttons-wrapper">
-                    <button>edit</button>
-                    <a th:href="@{/post/{idPost}/comment/{id}/delete(idPost=${post.getId()}, id=${comment.getId()})}"><button>X</button></a>
+                    <th:block th:switch="${isEdited}">
+                        <a th:case="true" th:href="@{/post/{idPost}(idPost=${post.id})} + ${'#c_'+comment.id}">
+                            <button>cancel</button>
+                        </a>
+                        <a th:case="*" th:href="@{/post/{idPost}/comment/{id}/edit(idPost=${post.id}, id=${comment.id})} + ${'#c_'+comment.id}">
+                            <button>edit</button>
+                        </a>
+                    </th:block>
+                    <a th:href="@{/post/{idPost}/comment/{id}/delete(idPost=${post.id}, id=${comment.id})}">
+                        <button>X</button>
+                    </a>
                 </div>
                 <div class="author-wrapper">
-                    <span th:text="${comment.getUsername()}" class="author"></span>
+                    <span th:text="${comment.username}" class="author"></span>
                 </div>
-                <p th:text="${comment.getCommentContent()}"></p>
+                <th:block th:switch="${isEdited}">
+                    <form th:case="true" th:object=${commentEdited} action="#" th:action="@{/post/{idPost}/comment/{id}/edit(idPost=${post.id}, id=*{id})}" method="post" class="form-comment-edit">
+                        <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
+                        <input type="submit" value="update">
+                    </form>
+                    <p th:case="*" th:text="${comment.commentContent}"></p>
+                </th:block>
+                
+
             </div>
         </div>
     </div>

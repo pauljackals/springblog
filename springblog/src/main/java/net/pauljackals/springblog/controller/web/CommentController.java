@@ -1,5 +1,7 @@
 package net.pauljackals.springblog.controller.web;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,18 +20,15 @@ public class CommentController {
     CommentManager commentManager;
     PostManager postManager;
 
-    public CommentController(
-        @Autowired PostManager postManager,
-        @Autowired CommentManager commentManager
-    ) {
+    public CommentController(@Autowired PostManager postManager, @Autowired CommentManager commentManager) {
         this.commentManager = commentManager;
         this.postManager = postManager;
     }
 
     @PostMapping("/post/{idPostPath}/comment")
     public String addComment(@PathVariable("idPostPath") String idPost, @ModelAttribute Comment comment, Model model) {
-        Comment commentNew = commentManager.addComment(comment);
         Post post = postManager.getPost(idPost);
+        Comment commentNew = commentManager.addComment(comment);
         post.addComment(commentNew);
 
         return String.format("redirect:/post/%s", post.getId());
@@ -37,10 +36,31 @@ public class CommentController {
 
     @GetMapping("/post/{idPostPath}/comment/{id}/delete")
     public String removeComment(@PathVariable("idPostPath") String idPost, @PathVariable("id") String id, Model model) {
-        Comment comment = commentManager.removeComment(id);
         Post post = postManager.getPost(idPost);
+        Comment comment = commentManager.removeComment(id);
         post.removeComment(comment);
 
         return String.format("redirect:/post/%s", post.getId());
+    }
+
+    @GetMapping("/post/{idPost}/comment/{id}/edit")
+    public String getCommentEdit(@PathVariable("idPost") String idPost, @PathVariable("id") String id, Model model) {
+        Post post = postManager.getPost(idPost);
+        Comment comment = commentManager.getComment(id);
+
+        model.addAllAttributes(Map.ofEntries(
+            Map.entry("post", post),
+            Map.entry("commentTemplate", new Comment("", "", "")),
+            Map.entry("commentEdited", comment)
+        ));
+        return "post";
+    }
+
+    @PostMapping("/post/{idPostPath}/comment/{idPath}/edit")
+    public String updateComment(@PathVariable("idPostPath") String idPost, @PathVariable("idPath") String id, @ModelAttribute Comment commentUpdated, Model model) {
+        Post post = postManager.getPost(idPost);
+        Comment comment = commentManager.updateComment(id, commentUpdated);
+
+        return String.format("redirect:/post/%s#c_%s", post.getId(), comment.getId());
     }
 }
