@@ -13,7 +13,6 @@ public class Author {
     @NonNull private String firstName;
     @NonNull private String lastName;
     @NonNull private String username;
-    // private List<Post> posts = Collections.synchronizedList(new ArrayList<>());
     private int idCSV = -1;
 
     public Author(int idCSV, @NonNull String firstName, @NonNull String lastName, @NonNull String username) {
@@ -22,8 +21,4 @@ public class Author {
         this.username = username;
         this.idCSV = idCSV;
     }
-
-    // public void addPost(Post post) {
-    //     posts.add(post);
-    // }
 }
