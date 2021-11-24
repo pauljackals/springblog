@@ -5,11 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <title th:text="${title}"></title>
+    <title>Post</title>
 </head>
 <body>
     <div class="post-details">
-        <div th:replace="fragments/post :: fragment"></div>
+        <a th:href="@{/}"><button>back</button></a>
+        <div th:replace="fragments/post"></div>
+        <div class="form-comment">
+            <form action="#" method="post" th:action="@{/comment/{idPost}(idPost=${post.getId()})}" th:object="${commentTemplate}">
+                <input type="hidden" th:field="*{id}">
+                <input type="text" th:field="*{username}" placeholder="username">
+                <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
+                <input type="submit" th:value="send">
+            </form>
+        </div>
         <div class="comments">
             <div th:each="comment : ${post.getComments()}" class="comment">
                 <div class="author-wrapper">

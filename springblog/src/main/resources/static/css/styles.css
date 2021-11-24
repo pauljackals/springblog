@@ -48,3 +48,24 @@
 .author-wrapper {
     border-bottom: 1px solid black;
 }
+
+.form-comment {
+    border: 1px solid black;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.form-comment input {
+    display: block;
+}
+.form-comment textarea {
+    display: block;
+    width: 400px;
+    height: 50px;
+    resize: none;
+}
+.form-comment input[type="submit"] {
+    margin-left: auto;
+}
+.form-comment input:not(:last-child), .form-comment textarea {
+    margin-bottom: 10px;
+}

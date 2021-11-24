@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.service.PostManager;
 
@@ -24,8 +25,8 @@ public class PostController {
         Post post = postManager.getPost(id);
 
         model.addAllAttributes(Map.ofEntries(
-            Map.entry("title", "Post"),
-            Map.entry("post", post)
+            Map.entry("post", post),
+            Map.entry("commentTemplate", new Comment("", "", ""))
         ));
         return "post";
     }
@@ -33,7 +34,6 @@ public class PostController {
     @GetMapping("/")
     public String getPosts(Model model) {
         model.addAllAttributes(Map.ofEntries(
-            Map.entry("title", "Posts"),
             Map.entry("textComments", "comments"),
             Map.entry("posts", postManager.getPosts())
         ));
