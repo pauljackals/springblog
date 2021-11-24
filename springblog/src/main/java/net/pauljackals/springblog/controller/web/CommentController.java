@@ -3,6 +3,7 @@ package net.pauljackals.springblog.controller.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,11 +26,20 @@ public class CommentController {
         this.postManager = postManager;
     }
 
-    @PostMapping("/comment/{idPostPath}")
+    @PostMapping("/post/{idPostPath}/comment")
     public String addComment(@PathVariable("idPostPath") String idPost, @ModelAttribute Comment comment, Model model) {
-        Post post = postManager.getPost(idPost);
         Comment commentNew = commentManager.addComment(comment);
+        Post post = postManager.getPost(idPost);
         post.addComment(commentNew);
+
+        return String.format("redirect:/post/%s", post.getId());
+    }
+
+    @GetMapping("/post/{idPostPath}/comment/{id}/delete")
+    public String removeComment(@PathVariable("idPostPath") String idPost, @PathVariable("id") String id, Model model) {
+        Comment comment = commentManager.removeComment(id);
+        Post post = postManager.getPost(idPost);
+        post.removeComment(comment);
 
         return String.format("redirect:/post/%s", post.getId());
     }

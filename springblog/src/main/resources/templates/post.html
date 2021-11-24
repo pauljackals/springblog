@@ -12,7 +12,7 @@
         <a th:href="@{/}"><button>back</button></a>
         <div th:replace="fragments/post"></div>
         <div class="form-comment">
-            <form action="#" method="post" th:action="@{/comment/{idPost}(idPost=${post.getId()})}" th:object="${commentTemplate}">
+            <form action="#" method="post" th:action="@{/post/{idPost}/comment(idPost=${post.getId()})}" th:object="${commentTemplate}">
                 <input type="hidden" th:field="*{id}">
                 <input type="text" th:field="*{username}" placeholder="username">
                 <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
@@ -21,6 +21,10 @@
         </div>
         <div class="comments">
             <div th:each="comment : ${post.getComments()}" class="comment">
+                <div class="config-buttons-wrapper">
+                    <button>edit</button>
+                    <a th:href="@{/post/{idPost}/comment/{id}/delete(idPost=${post.getId()}, id=${comment.getId()})}"><button>X</button></a>
+                </div>
                 <div class="author-wrapper">
                     <span th:text="${comment.getUsername()}" class="author"></span>
                 </div>

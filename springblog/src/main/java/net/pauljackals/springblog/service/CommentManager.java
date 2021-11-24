@@ -23,6 +23,17 @@ public class CommentManager {
         }
     }
 
+    public Comment getComment(String id) {
+        Comment commentToReturn = null;
+        for (Comment comment : comments) {
+            if(id.equals(comment.getId())) {
+                commentToReturn = comment;
+                break;
+            }
+        }
+        return commentToReturn;
+    }
+
     public Comment addComment(Comment comment, boolean isFromCSV) {
         Comment commentNew;
         if(!isFromCSV) {
@@ -40,5 +51,13 @@ public class CommentManager {
     }
     public Comment addComment(Comment comment) {
         return addComment(comment, false);
+    }
+
+    public Comment removeComment(String id) {
+        Comment comment = getComment(id);
+        if(comment != null) {
+            comments.remove(comment);
+        }
+        return comment;
     }
 }

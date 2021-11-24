@@ -69,3 +69,11 @@
 .form-comment input:not(:last-child), .form-comment textarea {
     margin-bottom: 10px;
 }
+
+.config-buttons-wrapper {
+    display: flex;
+    justify-content: end;
+}
+.config-buttons-wrapper button:not(:first-child) {
+    margin-left: 5px;
+}
