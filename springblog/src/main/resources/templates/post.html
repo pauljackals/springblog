@@ -1,24 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
     <title th:text="${title}"></title>
 </head>
 <body>
     <div class="post-details">
-        <div class="post">
-            <div class="authors">
-                <span th:each="author : ${post.getAuthors()}" th:text="${author.getUsername()}" class="author"></span>
-            </div>
-            <p th:text="${post.getPostContent()}"></p>
-            <ul>
-                <li th:each="attachment : ${post.getAttachments()}" th:text="${attachment.getFilename()}"></li>
-            </ul>
-            <p th:text="${post.getTags()}" class="tags"></p>
-        </div>
+        <div th:replace="fragments/post :: fragment"></div>
         <div class="comments">
             <div th:each="comment : ${post.getComments()}" class="comment">
                 <div class="author-wrapper">

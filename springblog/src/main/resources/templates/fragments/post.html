@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="fragment" class="post">
+        <div class="authors">
+            <span th:each="author : ${post.getAuthors()}" th:text="${author.getUsername()}" class="author"></span>
+        </div>
+        <p th:text="${post.getPostContent()}"></p>
+        <a th:if="${posts!=null}" th:href="@{/post/{id}(id=${post.getId()})}"><span th:text="${textComments + '(' + post.getComments().size() + ')'}"></span></a>
+        <ul>
+            <li th:each="attachment : ${post.getAttachments()}" th:text="${attachment.getFilename()}"></li>
+        </ul>
+        <p th:text="${post.getTags()}" class="tags"></p>
+    </div>
+</body>
+</html>
