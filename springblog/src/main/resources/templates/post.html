@@ -9,14 +9,14 @@
 </head>
 <body>
     <div class="post-details">
-        <a th:href="@{/}"><button>back</button></a>
+        <a th:href="@{${'/#post_' + post.getId()}}"><button>back</button></a>
         <div th:replace="fragments/post"></div>
         <div class="form-comment">
             <form action="#" method="post" th:action="@{/post/{idPost}/comment(idPost=${post.getId()})}" th:object="${commentTemplate}">
                 <input type="hidden" th:field="*{id}">
                 <input type="text" th:field="*{username}" placeholder="username">
                 <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
-                <input type="submit" th:value="send">
+                <input type="submit" value="send">
             </form>
         </div>
         <div class="comments">

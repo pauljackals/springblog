@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-    <div class="post">
+    <div class="post" th:attr="id=${'post_' + post.getId()}">
         <div class="authors">
             <span th:each="author : ${post.getAuthors()}" th:text="${author.getUsername()}" class="author"></span>
         </div>
