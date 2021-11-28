@@ -27,7 +27,7 @@ public class PostController {
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", post),
-            Map.entry("commentTemplate", new Comment("", "", ""))
+            Map.entry("commentTemplate", new Comment())
         ));
         return "post";
     }

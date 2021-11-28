@@ -42,4 +42,15 @@ public class AuthorManager {
     public Author addAuthor(Author author) {
         return addAuthor(author, false);
     }
+
+    public Author getAuthorByUsername(String username) {
+        Author authorToReturn = null;
+        for (Author author : authors) {
+            if(author.getUsername().equals(username)) {
+                authorToReturn = author;
+                break;
+            }
+        }
+        return authorToReturn;
+    }
 }

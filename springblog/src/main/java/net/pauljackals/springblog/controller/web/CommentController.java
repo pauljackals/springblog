@@ -17,8 +17,8 @@ import net.pauljackals.springblog.service.PostManager;
 
 @Controller
 public class CommentController {
-    CommentManager commentManager;
-    PostManager postManager;
+    private CommentManager commentManager;
+    private PostManager postManager;
 
     public CommentController(@Autowired PostManager postManager, @Autowired CommentManager commentManager) {
         this.commentManager = commentManager;

@@ -79,6 +79,15 @@ public class PostManager {
         }
         return postToReturn;
     }
+    public List<Post> getPostsByAuthor(Author author) {
+        List<Post> posts = new ArrayList<>();
+        for (Post post : this.posts) {
+            if(post.getAuthors().contains(author)) {
+                posts.add(post);
+            }
+        }
+        return posts;
+    }
 
     public Post addPost(Post post, boolean isFromCSV) {
         Post postNew;
