@@ -8,6 +8,7 @@
     <title>Posts</title>
 </head>
 <body>
+    <th:block th:insert="fragments/navbar"></th:block>
     <div class="posts">
         <th:block th:each="post : ${posts}" th:insert="fragments/post"></th:block>
     </div>

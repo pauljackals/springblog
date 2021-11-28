@@ -1,3 +1,33 @@
+body {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    overflow-x: hidden;
+}
+.navbar {
+    position: fixed;
+    top: 0;
+    background-color: lightsteelblue;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.navbar, .navbar-dummy {
+    height: 80px;
+}
+.navbar-dummy {
+    margin-bottom: 30px;
+}
+.navbar > h1 {
+    flex: 2;
+    text-align: center;
+}
+.navbar > div {
+    flex: 1;
+    padding: 0 20px;
+}
+
 .posts {
     display: flex;
     flex-direction: column-reverse;
@@ -7,6 +37,7 @@
     width: 700px;
     border: 1px solid black;
     padding: 10px;
+    scroll-margin-top: 110px;
 }
 .post:not(:first-child) {
     margin-bottom: 30px;
@@ -44,6 +75,9 @@
     border: 1px solid black;
     padding: 10px;
     margin-top: 10px;
+}
+.comment {
+    scroll-margin-top: 90px;
 }
 .author-wrapper {
     border-bottom: 1px solid black;

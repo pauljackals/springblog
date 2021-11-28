@@ -25,7 +25,7 @@ public class CommentController {
         this.postManager = postManager;
     }
 
-    @PostMapping("/post/{idPostPath}/comment")
+    @PostMapping("/post/{idPostPath}")
     public String addComment(@PathVariable("idPostPath") String idPost, @ModelAttribute Comment comment, Model model) {
         Post post = postManager.getPost(idPost);
         Comment commentNew = commentManager.addComment(comment);

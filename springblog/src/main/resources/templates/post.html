@@ -8,11 +8,11 @@
     <title>Post</title>
 </head>
 <body>
+    <th:block th:insert="fragments/navbar :: fragment(${'/#p_' + post.id})"></th:block>
     <div class="post-details">
-        <a th:href="@{${'/#p_' + post.id}}"><button>back</button></a>
         <th:block th:insert="fragments/post"></th:block>
         <div class="form-comment">
-            <form action="#" method="post" th:action="@{/post/{idPost}/comment(idPost=${post.id})}" th:object="${commentTemplate}">
+            <form action="#" method="post" th:action="@{/post/{idPost}(idPost=${post.id})}" th:object="${commentTemplate}">
                 <input type="text" th:field="*{username}" placeholder="username">
                 <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
                 <input type="submit" value="send">

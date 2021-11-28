@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <th:block th:fragment="fragment(link)">
+        <nav class="navbar">
+            <div>
+                <a th:if="${link!=null}" th:href="@{${link}}"><button>back</button></a>
+            </div>
+            <h1>Springblog</h1>
+            <div></div>
+        </nav>
+        <div class="navbar-dummy"></div>
+    </th:block>
+</body>
+</html>
