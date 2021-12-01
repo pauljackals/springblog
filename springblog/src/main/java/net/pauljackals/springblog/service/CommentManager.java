@@ -34,6 +34,16 @@ public class CommentManager {
         return commentToReturn;
     }
 
+    public List<Comment> getCommentsByUsername(String username) {
+        List<Comment> comments = new ArrayList<>();
+        for (Comment comment : this.comments) {
+            if(comment.getUsername().equals(username)) {
+                comments.add(comment);
+            }
+        }
+        return comments;
+    }
+
     public Comment addComment(Comment comment, boolean isFromCSV) {
         Comment commentNew;
         if(!isFromCSV) {

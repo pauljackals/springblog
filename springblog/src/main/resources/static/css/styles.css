@@ -20,12 +20,16 @@ body {
     margin-bottom: 30px;
 }
 .navbar > h1 {
-    flex: 2;
+    flex: 1;
     text-align: center;
+    font-size: 36px;
+    margin: 0;
 }
 .navbar > div {
     flex: 1;
     padding: 0 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .posts {
@@ -110,4 +114,32 @@ body {
 }
 .config-buttons-wrapper button:not(:first-child) {
     margin-left: 5px;
+}
+
+.author-details {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.author-details table {
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+.author-details table td, .author-details table th {
+    border: 1px solid black;
+    width: 100px;
+    text-align: center;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+}
+.stats table {
+    border-collapse: collapse;
+}
+.stats table td, .stats table th {
+    border: 1px solid black;
+    width: 150px;
+    text-align: center;
 }

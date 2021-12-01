@@ -8,8 +8,10 @@
             <div>
                 <a th:if="${link!=null}" th:href="@{${link}}"><button>back</button></a>
             </div>
-            <h1>Springblog</h1>
-            <div></div>
+            <h1><a th:href="@{/}">Springblog</a></h1>
+            <div class="navbar-right">
+                <h2><a th:href="@{/stats}">stats</a></h2>
+            </div>
         </nav>
         <div class="navbar-dummy"></div>
     </th:block>
