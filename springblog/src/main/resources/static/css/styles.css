@@ -143,3 +143,22 @@ body {
     width: 150px;
     text-align: center;
 }
+
+.search {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 30px;
+}
+.search h3 {
+    text-align: center;
+    margin: 0;
+}
+.search input {
+    margin-top: 5px;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}

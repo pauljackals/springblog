@@ -26,7 +26,7 @@ public class CommentController {
     }
 
     @PostMapping("/post/{idPostPath}")
-    public String addComment(@PathVariable("idPostPath") String idPost, @ModelAttribute Comment comment, Model model) {
+    public String addComment(@PathVariable("idPostPath") String idPost, @ModelAttribute Comment comment) {
         Post post = postManager.getPost(idPost);
         Comment commentNew = commentManager.addComment(comment);
         post.addComment(commentNew);
@@ -35,7 +35,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{idPostPath}/comment/{id}/delete")
-    public String removeComment(@PathVariable("idPostPath") String idPost, @PathVariable("id") String id, Model model) {
+    public String removeComment(@PathVariable("idPostPath") String idPost, @PathVariable("id") String id) {
         Post post = postManager.getPost(idPost);
         Comment comment = commentManager.removeComment(id);
         post.removeComment(comment);
@@ -57,7 +57,7 @@ public class CommentController {
     }
 
     @PostMapping("/post/{idPostPath}/comment/{idPath}/edit")
-    public String updateComment(@PathVariable("idPostPath") String idPost, @PathVariable("idPath") String id, @ModelAttribute Comment commentUpdated, Model model) {
+    public String updateComment(@PathVariable("idPostPath") String idPost, @PathVariable("idPath") String id, @ModelAttribute Comment commentUpdated) {
         Post post = postManager.getPost(idPost);
         Comment comment = commentManager.updateComment(id, commentUpdated);
 

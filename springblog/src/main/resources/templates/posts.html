@@ -9,6 +9,15 @@
 </head>
 <body>
     <th:block th:insert="fragments/navbar"></th:block>
+    <div class="search">
+        <h3>search settings</h3>
+        <form action="#" method="get" th:action="@{/}" th:object="${searchSettings}">
+            <input type="text" th:field="*{tag}" placeholder="tag">
+            <input type="text" th:field="*{authors}" placeholder="authors">
+            <input type="text" th:field="*{word}" placeholder="word">
+            <input type="submit" value="apply">
+        </form>
+    </div>
     <div class="posts">
         <th:block th:each="post : ${posts}" th:insert="fragments/post"></th:block>
     </div>

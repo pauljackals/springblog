@@ -8,7 +8,7 @@
             <a th:each="author : ${post.authors}" th:href="@{/author/{username}(username=${author.username})}" th:text="${author.username}" class="author"></a>
         </div>
         <p th:text="${post.postContent}"></p>
-        <a th:if="${posts!=null}" th:href="@{/post/{id}(id=${post.id})}"><span th:text="${textComments + '(' + post.comments.size() + ')'}"></span></a>
+        <a th:if="${posts!=null}" th:href="@{/post/{id}(id=${post.id})}"><span th:text="${'comments(' + post.comments.size() + ')'}"></span></a>
         <ul>
             <li th:each="attachment : ${post.attachments}" th:text="${attachment.filename}"></li>
         </ul>
