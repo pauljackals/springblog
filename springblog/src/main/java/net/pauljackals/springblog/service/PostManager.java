@@ -14,6 +14,7 @@ import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.PostAuthor;
+import net.pauljackals.springblog.domain.SearchSettings;
 
 @Service
 @Getter
@@ -67,6 +68,37 @@ public class PostManager {
             }
             addPost(post, true);
         }
+    }
+
+    public List<Post> getPosts(SearchSettings searchSettings) {
+        List<Post> posts = new ArrayList<>();
+        for (Post post : this.posts) {
+            String tag = searchSettings.getTag();
+            String authors = searchSettings.getAuthors();
+            String word = searchSettings.getWord();
+
+            if(tag!=null && tag.length()>0 && !post.getTags().matches(String.format("(.+ )?%s( .+)?", tag))) {
+                continue;
+            }
+            if(authors!=null && authors.length()>0) {
+                boolean continueFlag = false;
+                List<Author> postAuthors = post.getAuthors();
+                for(String author : authors.split(" ")) {
+                    if(postAuthors.stream().noneMatch(postAuthor -> postAuthor.getUsername().equals(author))) {
+                        continueFlag = true;
+                        break;
+                    }
+                }
+                if(continueFlag) {
+                    continue;
+                }
+            }
+            if(word!=null && word.length()>0 && !post.getPostContent().toLowerCase().matches(String.format("(.+[ \\p{Punct}])?%s([ \\p{Punct}].+)?", word.toLowerCase()))) {
+                continue;
+            }
+            posts.add(post);
+        }
+        return posts;
     }
 
     public Post getPost(String id) {

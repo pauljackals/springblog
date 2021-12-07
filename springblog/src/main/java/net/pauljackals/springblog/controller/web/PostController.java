@@ -36,7 +36,7 @@ public class PostController {
 
     @GetMapping("/")
     public String getPosts(@ModelAttribute SearchSettings searchSettings, Model model) {
-        List<Post> posts = postManager.getPosts();
+        List<Post> posts = postManager.getPosts(searchSettings);
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("posts", posts),
