@@ -47,6 +47,14 @@ body {
     margin-bottom: 30px;
 }
 
+.post-id {
+    font-style: italic;
+    margin-top: 0px;
+}
+.post-inside-info span {
+    display: block;
+    font-weight: bold;
+}
 .authors {
     display: flex;
     flex-wrap: wrap;

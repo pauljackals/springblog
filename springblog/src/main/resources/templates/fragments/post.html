@@ -4,14 +4,24 @@
 </head>
 <body>
     <div class="post" th:attr="id=${'p_' + post.id}">
+        
+        <a th:href="@{/post/{id}(id=${post.id})}" th:remove="${posts==null} ? tag : none">
+            <p class="post-id" th:text="${post.id}"></p>
+        </a>
         <div class="authors">
             <a th:each="author : ${post.authors}" th:href="@{/author/{username}(username=${author.username})}" th:text="${author.username}" class="author"></a>
         </div>
         <p th:text="${post.postContent}"></p>
-        <a th:if="${posts!=null}" th:href="@{/post/{id}(id=${post.id})}"><span th:text="${'comments(' + post.comments.size() + ')'}"></span></a>
-        <ul>
-            <li th:each="attachment : ${post.attachments}" th:text="${attachment.filename}"></li>
-        </ul>
+        <th:block th:switch="${posts==null}">
+            <ul th:case="true">
+                <li th:each="attachment : ${post.attachments}" th:text="${attachment.filename}"></li>
+            </ul>
+            <div th:case="*" class="post-inside-info">
+                <span th:text="${'attachments: ' + post.attachments.size()}"></span>
+                <!-- <a th:href="@{/post/{id}(id=${post.id})}"><span th:text="${'comments: ' + post.comments.size()}"></span></a> -->
+                <span th:text="${'comments: ' + post.comments.size()}"></span>
+            </div>
+        </th:block>
         <p th:text="${post.tags}" class="tags"></p>
     </div>
 </body>
