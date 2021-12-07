@@ -8,7 +8,7 @@
     <title>Post</title>
 </head>
 <body>
-    <th:block th:insert="fragments/navbar :: fragment(${'/#p_' + post.id})"></th:block>
+    <th:block th:insert="fragments/navbar :: fragment(${'/post/#p_' + post.id})"></th:block>
     <div class="post-details">
         <th:block th:insert="fragments/post"></th:block>
         <div class="form-comment">

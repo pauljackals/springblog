@@ -5,9 +5,11 @@
 <body>
     <div class="post" th:attr="id=${'p_' + post.id}">
         
-        <a th:href="@{/post/{id}(id=${post.id})}" th:remove="${posts==null} ? tag : none">
-            <p class="post-id" th:text="${post.id}"></p>
-        </a>
+        <p class="post-id">
+            <a th:href="@{/post/{id}(id=${post.id})}" th:remove="${posts==null} ? tag : none">
+                <span th:text="${post.id}"></span>
+            </a>
+        </p>
         <div class="authors">
             <a th:each="author : ${post.authors}" th:href="@{/author/{username}(username=${author.username})}" th:text="${author.username}" class="author"></a>
         </div>
@@ -18,7 +20,6 @@
             </ul>
             <div th:case="*" class="post-inside-info">
                 <span th:text="${'attachments: ' + post.attachments.size()}"></span>
-                <!-- <a th:href="@{/post/{id}(id=${post.id})}"><span th:text="${'comments: ' + post.comments.size()}"></span></a> -->
                 <span th:text="${'comments: ' + post.comments.size()}"></span>
             </div>
         </th:block>

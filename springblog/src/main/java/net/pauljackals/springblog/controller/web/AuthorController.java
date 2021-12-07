@@ -29,7 +29,7 @@ public class AuthorController {
     }
 
     @GetMapping("/author/{username}")
-    public String getAuthor(@PathVariable("username") String username, Model model) {
+    public String getAuthor(@PathVariable String username, Model model) {
         Author author = authorManager.getAuthorByUsername(username);
         List<Post> posts = postManager.getPostsByAuthor(author);
         List<Comment> comments = commentManager.getCommentsByUsername(author.getUsername());

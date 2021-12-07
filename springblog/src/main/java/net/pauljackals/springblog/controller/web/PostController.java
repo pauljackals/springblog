@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
@@ -24,7 +25,7 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public String getPost(@PathVariable("id") String id, Model model) {
+    public String getPost(@PathVariable String id, Model model) {
         Post post = postManager.getPost(id);
 
         model.addAllAttributes(Map.ofEntries(
@@ -34,8 +35,12 @@ public class PostController {
         return "post";
     }
 
-    @GetMapping("/")
-    public String getPosts(@ModelAttribute SearchSettings searchSettings, Model model) {
+    @GetMapping(path = {"/", "/post"})
+    public String getPosts(@ModelAttribute SearchSettings searchSettings, @RequestParam(required = false) String id, Model model) {
+        if(id!=null && id.length()>0) {
+            return String.format("redirect:/post/%s", id);
+        }
+
         List<Post> posts = postManager.getPosts(searchSettings);
 
         model.addAllAttributes(Map.ofEntries(

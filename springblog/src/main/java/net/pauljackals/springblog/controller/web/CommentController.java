@@ -44,7 +44,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{idPost}/comment/{id}/edit")
-    public String getCommentEdit(@PathVariable("idPost") String idPost, @PathVariable("id") String id, Model model) {
+    public String getCommentEdit(@PathVariable String idPost, @PathVariable String id, Model model) {
         Post post = postManager.getPost(idPost);
         Comment comment = commentManager.getComment(id);
 
