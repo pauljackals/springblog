@@ -31,6 +31,13 @@ body {
     display: flex;
     justify-content: center;
 }
+.navbar-right a {
+    font-size: 26px;
+    font-weight: bold;
+}
+.navbar-right a:not(:last-child) {
+    margin-right: 20px;
+}
 
 .posts {
     display: flex;
@@ -174,4 +181,16 @@ body {
 }
 .search input:not([type="submit"]), .search h3 {
     margin-bottom: 5px;
+}
+
+.users {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.users-title {
+    text-align: center;
+}
+.users li {
+    margin-bottom: 10px;
 }

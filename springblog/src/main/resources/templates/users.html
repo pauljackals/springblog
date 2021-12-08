@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <title th:text="${title}"></title>
+</head>
+<body>
+    <th:block th:insert="fragments/navbar"></th:block>
+    <h2 th:text="${title}" class="users-title"></h2>
+    <div class="search">
+        <h3>filter settings</h3>
+        <form action="#" method="get" th:action="@{${userURL}}">
+            <input type="text" name="username" placeholder="username" th:value="${username}">
+            <input type="submit" value="apply">
+        </form>
+    </div>
+    <ul class="users">
+        <li th:each="user : ${users}">
+            <a th:href="@{${userURL + '/' + user.id}}" th:text="${user.username}"></a>
+        </li>
+    </ul>
+</body>
+</html>

@@ -19,6 +19,19 @@ public class UserManager {
         this.users = Collections.synchronizedList(new ArrayList<>());
     }
 
+    public List<User> getUsers(String username) {
+        if(username==null || username.length()==0) {
+            return this.users;
+        }
+        List<User> users = new ArrayList<>();
+        for (User user : this.users) {
+            if(user.getUsername().contains(username)) {
+                users.add(user);
+            }
+        }
+        return users;
+    }
+
     public User getUser(String id) {
         User userToReturn = null;
         for (User user : users) {

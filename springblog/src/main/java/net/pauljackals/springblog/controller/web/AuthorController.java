@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Post;
@@ -25,6 +26,19 @@ public class AuthorController {
     ) {
         this.authorManager = authorManager;
         this.postManager = postManager;
+    }
+
+    @GetMapping("/author")
+    public String getUsers(@RequestParam(required = false) String username, Model model) {
+        List<Author> authors = authorManager.getAuthors(username);
+
+        model.addAllAttributes(Map.ofEntries(
+            Map.entry("users", authors),
+            Map.entry("title", "Authors"),
+            Map.entry("userURL", "/author"),
+            Map.entry("username", username!=null ? username : "")
+        ));
+        return "users";
     }
 
     @GetMapping("/author/{id}")
