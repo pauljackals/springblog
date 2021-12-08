@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div class="comment" th:attr="id=${'c_' + comment.id}" th:with="isEdited=${commentEdited!=null && commentEdited.id.equals(comment.id)}">
+        <div class="config-buttons-wrapper">
+            <th:block th:switch="${isEdited}">
+                <a th:case="true" th:href="@{/post/{idPost}(idPost=${post.id})} + ${'#c_'+comment.id}">
+                    <button>cancel</button>
+                </a>
+                <a th:case="*" th:href="@{/post/{idPost}/comment/{id}/edit(idPost=${post.id}, id=${comment.id})} + ${'#c_'+comment.id}">
+                    <button>edit</button>
+                </a>
+            </th:block>
+            <a th:href="@{/post/{idPost}/comment/{id}/delete(idPost=${post.id}, id=${comment.id})}">
+                <button>X</button>
+            </a>
+        </div>
+        <div class="author-wrapper">
+            <a th:href="@{/user/{id}(id=${comment.user.id})}" th:text="${comment.user.username}" class="author"></a>
+        </div>
+        <th:block th:switch="${isEdited}">
+            <form th:case="true" th:object=${commentEdited} action="#" th:action="@{/post/{idPost}/comment/{id}/edit(idPost=${post.id}, id=*{id})}" method="post" class="form-comment-edit">
+                <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
+                <input type="submit" value="update">
+            </form>
+            <p th:case="*" th:text="${comment.commentContent}"></p>
+        </th:block>
+    </div>
+</body>
+</html>

@@ -25,7 +25,7 @@ public class AuthorRestController {
     @GetMapping("/api/author/{id}/post")
     public List<Post> getAuthorPosts(@PathVariable String id) {
         Author author = authorManager.getAuthor(id);
-        List<Post> posts = postManager.getPostsByAuthor(author);
+        List<Post> posts = postManager.getPosts(author);
         return posts;
     }
 }

@@ -30,7 +30,7 @@ public class AuthorController {
     @GetMapping("/author/{id}")
     public String getAuthor(@PathVariable String id, Model model) {
         Author author = authorManager.getAuthor(id);
-        List<Post> posts = postManager.getPostsByAuthor(author);
+        List<Post> posts = postManager.getPosts(author);
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("author", author),

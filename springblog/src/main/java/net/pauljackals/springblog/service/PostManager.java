@@ -14,7 +14,9 @@ import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.PostAuthor;
+import net.pauljackals.springblog.domain.PostsWithComments;
 import net.pauljackals.springblog.domain.SearchSettings;
+import net.pauljackals.springblog.domain.User;
 
 @Service
 @Getter
@@ -111,7 +113,7 @@ public class PostManager {
         }
         return postToReturn;
     }
-    public List<Post> getPostsByAuthor(Author author) {
+    public List<Post> getPosts(Author author) {
         List<Post> posts = new ArrayList<>();
         for (Post post : this.posts) {
             if(post.getAuthors().contains(author)) {
@@ -119,6 +121,26 @@ public class PostManager {
             }
         }
         return posts;
+    }
+    public PostsWithComments getPostsWithComments(User user) {
+        List<Post> posts = new ArrayList<>();
+        List<List<Comment>> comments = new ArrayList<>();
+        List<Comment> commentsAll = new ArrayList<>();
+
+        for (Post post : this.posts) {
+            List<Comment> commentsPart = new ArrayList<>();
+            for (Comment comment : post.getComments()) {
+                if(comment.getUser().equals(user)) {
+                    commentsPart.add(comment);
+                    commentsAll.add(comment);
+                }
+            }
+            if(commentsPart.size() > 0) {
+                comments.add(commentsPart);
+                posts.add(post);
+            }
+        }
+        return new PostsWithComments(posts, comments, commentsAll);
     }
 
     public Post addPost(Post post, boolean isFromCSV) {

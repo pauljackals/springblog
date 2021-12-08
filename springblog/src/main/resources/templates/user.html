@@ -17,9 +17,21 @@
             </tr>
             <tr>
                 <td>comments</td>
-                <td th:text="${comments.size()}"></td>
+                <td th:text="${commentsAll.size()}"></td>
+            </tr>
+            <tr>
+                <td>commented posts</td>
+                <td th:text="${posts.size()}"></td>
             </tr>
         </table>
+    </div>
+    <div class="posts">
+        <th:block th:each="post, postStat : ${posts}">
+            <div class="comments">
+                <th:block th:each="comment : ${comments[postStat.index]}" th:insert="fragments/comment"></th:block>
+            </div>
+            <th:block th:insert="fragments/post"></th:block>
+        </th:block>
     </div>
 </body>
 </html>
