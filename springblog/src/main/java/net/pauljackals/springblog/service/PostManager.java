@@ -22,6 +22,8 @@ import net.pauljackals.springblog.domain.User;
 @Getter
 public class PostManager {
     private List<Post> posts;
+    private CommentManager commentManager;
+    private AttachmentManager attachmentManager;
     
     public PostManager(
         @Autowired List<Post> posts,
@@ -31,6 +33,9 @@ public class PostManager {
         @Autowired CommentManager commentManager
     ) {
         this.posts = Collections.synchronizedList(new ArrayList<>());
+        this.commentManager = commentManager;
+        this.attachmentManager = attachmentManager;
+
         List<Author> authors = authorManager.getAuthors();
         List<Attachment> attachments = attachmentManager.getAttachments();
         List<Comment> comments = commentManager.getComments();
@@ -160,5 +165,21 @@ public class PostManager {
     }
     public Post addPost(Post post) {
         return addPost(post, false);
+    }
+
+    public Post removePost(String id) {
+        Post post = getPost(id);
+
+        if(post!=null) {
+            posts.remove(post);
+            for(Comment comment : post.getComments()) {
+                commentManager.removeComment(comment);
+            }
+            for(Attachment attachment : post.getAttachments()) {
+                attachmentManager.removeAttachment(attachment);
+            }
+        }
+
+        return post;
     }
 }

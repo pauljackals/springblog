@@ -4,7 +4,11 @@
 </head>
 <body>
     <div class="post" th:attr="id=${'p_' + post.id}">
-        
+        <div class="config-buttons-wrapper">
+            <a th:href="@{/post/{id}/delete(id=${post.id})}">
+                <button>X</button>
+            </a>
+        </div>
         <p class="post-id">
             <a th:href="@{/post/{id}(id=${post.id})}" th:remove="${posts==null} ? tag : none">
                 <span th:text="${post.id}"></span>

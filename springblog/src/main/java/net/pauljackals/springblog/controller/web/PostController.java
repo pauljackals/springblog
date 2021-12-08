@@ -49,4 +49,11 @@ public class PostController {
         ));
         return "posts";
     }
+
+    @GetMapping("/post/{id}/delete")
+    public String removePost(@PathVariable String id) {
+        postManager.removePost(id);
+
+        return "redirect:/post";
+    }
 }

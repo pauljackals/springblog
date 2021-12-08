@@ -70,6 +70,9 @@ public class CommentManager {
         }
         return comment;
     }
+    public Comment removeComment(Comment comment) {
+        return comments.remove(comment) ? comment : null;
+    }
 
     public Comment updateComment(String id, Comment commentUpdated) {
         Comment comment = getComment(id);

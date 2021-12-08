@@ -40,4 +40,8 @@ public class AttachmentManager {
     public Attachment addAttachment(Attachment attachment) {
         return addAttachment(attachment, false);
     }
+
+    public Attachment removeAttachment(Attachment attachment) {
+        return attachments.remove(attachment) ? attachment : null;
+    }
 }
