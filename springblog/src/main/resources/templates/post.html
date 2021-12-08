@@ -34,7 +34,7 @@
                     </a>
                 </div>
                 <div class="author-wrapper">
-                    <a th:href="@{/author/{username}(username=${comment.username})}" th:text="${comment.username}" class="author"></a>
+                    <a th:href="@{/user/{id}(id=${comment.user.id})}" th:text="${comment.user.username}" class="author"></a>
                 </div>
                 <th:block th:switch="${isEdited}">
                     <form th:case="true" th:object=${commentEdited} action="#" th:action="@{/post/{idPost}/comment/{id}/edit(idPost=${post.id}, id=*{id})}" method="post" class="form-comment-edit">

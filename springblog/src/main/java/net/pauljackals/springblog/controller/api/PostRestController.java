@@ -19,7 +19,7 @@ public class PostRestController {
     }
 
     @GetMapping("/api/post/{id}")
-    public Post getPost(@PathVariable("id") String id) {
+    public Post getPost(@PathVariable String id) {
         Post post = postManager.getPost(id);
         return post;
     }

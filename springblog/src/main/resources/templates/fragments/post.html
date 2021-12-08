@@ -11,7 +11,7 @@
             </a>
         </p>
         <div class="authors">
-            <a th:each="author : ${post.authors}" th:href="@{/author/{username}(username=${author.username})}" th:text="${author.username}" class="author"></a>
+            <a th:each="author : ${post.authors}" th:href="@{/author/{id}(id=${author.id})}" th:text="${author.username}" class="author"></a>
         </div>
         <p th:text="${post.postContent}"></p>
         <th:block th:switch="${posts==null}">

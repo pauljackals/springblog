@@ -10,14 +10,20 @@ import org.springframework.stereotype.Service;
 
 import lombok.Getter;
 import net.pauljackals.springblog.domain.Comment;
+import net.pauljackals.springblog.domain.User;
 
 @Service
 @Getter
 public class CommentManager {
     private List<Comment> comments;
+    private UserManager userManager;
     
-    public CommentManager(@Autowired List<Comment> comments) {
+    public CommentManager(
+        @Autowired List<Comment> comments,
+        @Autowired UserManager userManager
+    ) {
         this.comments = Collections.synchronizedList(new ArrayList<>());
+        this.userManager = userManager;
         for (Comment comment : comments) {
             addComment(comment, true);
         }
@@ -34,10 +40,10 @@ public class CommentManager {
         return commentToReturn;
     }
 
-    public List<Comment> getCommentsByUsername(String username) {
+    public List<Comment> getCommentsByUser(User user) {
         List<Comment> comments = new ArrayList<>();
         for (Comment comment : this.comments) {
-            if(comment.getUsername().equals(username)) {
+            if(comment.getUser().equals(user)) {
                 comments.add(comment);
             }
         }
@@ -56,6 +62,10 @@ public class CommentManager {
             comment.setId(UUID.randomUUID().toString());
             commentNew = comment;
         }
+
+        User user = userManager.createUserIfNew(commentNew.getUsername());
+        commentNew.setUser(user);
+        
         comments.add(commentNew);
         return commentNew;
     }

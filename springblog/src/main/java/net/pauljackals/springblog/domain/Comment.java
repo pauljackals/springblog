@@ -12,6 +12,7 @@ public class Comment {
     @NonNull private String id;
     @NonNull private String username;
     @NonNull private String commentContent;
+    private User user;
     private int idCSV = -1;
     private int idPost = -1;
 

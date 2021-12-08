@@ -22,9 +22,9 @@ public class AuthorRestController {
         this.authorManager = authorManager;
     }
 
-    @GetMapping("/api/author/{username}/post")
-    public List<Post> getAuthorPosts(@PathVariable("username") String username) {
-        Author author = authorManager.getAuthorByUsername(username);
+    @GetMapping("/api/author/{id}/post")
+    public List<Post> getAuthorPosts(@PathVariable String id) {
+        Author author = authorManager.getAuthor(id);
         List<Post> posts = postManager.getPostsByAuthor(author);
         return posts;
     }

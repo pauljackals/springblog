@@ -43,10 +43,10 @@ public class AuthorManager {
         return addAuthor(author, false);
     }
 
-    public Author getAuthorByUsername(String username) {
+    public Author getAuthor(String id) {
         Author authorToReturn = null;
         for (Author author : authors) {
-            if(author.getUsername().equals(username)) {
+            if(author.getId().equals(id)) {
                 authorToReturn = author;
                 break;
             }

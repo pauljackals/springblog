@@ -10,34 +10,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import net.pauljackals.springblog.domain.Author;
-import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.service.AuthorManager;
-import net.pauljackals.springblog.service.CommentManager;
 import net.pauljackals.springblog.service.PostManager;
 
 @Controller
 public class AuthorController {
     private AuthorManager authorManager;
     private PostManager postManager;
-    private CommentManager commentManager;
 
-    public AuthorController(@Autowired AuthorManager authorManager, @Autowired PostManager postManager, @Autowired CommentManager commentManager) {
+    public AuthorController(
+        @Autowired AuthorManager authorManager,
+        @Autowired PostManager postManager
+    ) {
         this.authorManager = authorManager;
         this.postManager = postManager;
-        this.commentManager = commentManager;
     }
 
-    @GetMapping("/author/{username}")
-    public String getAuthor(@PathVariable String username, Model model) {
-        Author author = authorManager.getAuthorByUsername(username);
+    @GetMapping("/author/{id}")
+    public String getAuthor(@PathVariable String id, Model model) {
+        Author author = authorManager.getAuthor(id);
         List<Post> posts = postManager.getPostsByAuthor(author);
-        List<Comment> comments = commentManager.getCommentsByUsername(author.getUsername());
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("author", author),
-            Map.entry("posts", posts),
-            Map.entry("comments", comments)
+            Map.entry("posts", posts)
         ));
         return "author";
     }

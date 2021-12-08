@@ -5,20 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <title>Author</title>
+    <title>User</title>
 </head>
 <body>
     <th:block th:insert="fragments/navbar"></th:block>
     <div class="author-details">
-        <h2 th:text="${author.username}"></h2>
-        <span th:text="${author.firstName + ' ' + author.lastName}"></span>
+        <h2 th:text="${user.username}"></h2>
         <table>
             <tr>
                 <th colspan="2">Activity</th>
             </tr>
             <tr>
-                <td>posts</td>
-                <td th:text="${posts.size()}"></td>
+                <td>comments</td>
+                <td th:text="${comments.size()}"></td>
             </tr>
         </table>
     </div>

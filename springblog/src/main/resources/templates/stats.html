@@ -14,26 +14,14 @@
             <tr>
                 <th colspan="2">Overall Statistics</th>
             </tr>
-            <tr>
-                <td>authors</td>
-                <td th:text="${authors.size()}"></td>
+            <tr th:each="list, listStat : ${lists}">
+                <td th:text="${names[listStat.index]}"></td>
+                <td th:text="${list.size()}"></td>
             </tr>
-            <tr>
-                <td>posts</td>
-                <td th:text="${posts.size()}"></td>
-            </tr>
-            <tr>
-                <td>comments</td>
-                <td th:text="${comments.size()}"></td>
-            </tr>
-            <tr>
-                <td>attachments</td>
-                <td th:text="${attachments.size()}"></td>
-            </tr>
-            <tr>
+            <!-- <tr>
                 <td>attachments size</td>
                 <td th:text="${'0 MB'}"></td>
-            </tr>
+            </tr> -->
         </table>
     </div>
 </body>
