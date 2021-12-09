@@ -25,6 +25,9 @@
             <input type="submit" value="apply">
         </form>
     </div>
+    <div class="post-new-button-wrapper">
+        <a th:href="@{/post/add}"><button>add new post</button></a>
+    </div>
     <div class="posts">
         <th:block th:each="post : ${posts}" th:insert="fragments/post"></th:block>
     </div>

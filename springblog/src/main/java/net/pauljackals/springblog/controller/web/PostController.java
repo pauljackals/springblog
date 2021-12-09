@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.pauljackals.springblog.domain.Comment;
@@ -22,6 +23,26 @@ public class PostController {
 
     public PostController(@Autowired PostManager postManager) {
         this.postManager = postManager;
+    }
+
+    @GetMapping("/post/add")
+    public String addPostForm(Model model) {
+        model.addAllAttributes(Map.ofEntries(
+            Map.entry("formURL", "/post/add"),
+            Map.entry("post", new Post()),
+            Map.entry("submitText", "post")
+        ));
+
+        return "postForm";
+    }
+
+    @PostMapping("/post/add")
+    public String addPost(@RequestParam String authorsString, @ModelAttribute Post post, Model model) {
+        // model.addAllAttributes(Map.ofEntries(
+        //     Map.entry("test", "test")
+        // ));
+
+        return "redirect:/post";
     }
 
     @GetMapping("/post/{id}")
