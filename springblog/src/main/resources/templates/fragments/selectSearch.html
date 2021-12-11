@@ -6,7 +6,7 @@
     <div class="select-search" th:fragment="fragment(label, field)">
         <label th:text="${label}"></label>
         <select th:field="*{__${field}__}">
-            <option th:each="type : ${T(net.pauljackals.springblog.domain.Sorting).values()}" th:value="${type}" th:text="${type.name().toLowerCase()}"></option>
+            <option th:each="type : ${T(net.pauljackals.springblog.domain.helpers.Sorting).values()}" th:value="${type}" th:text="${type.name().toLowerCase()}"></option>
         </select>
     </div>
 </body>

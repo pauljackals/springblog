@@ -228,3 +228,7 @@ body {
 .error-message {
     color: red;
 }
+.error-message.center {
+    display: block;
+    text-align: center;
+}

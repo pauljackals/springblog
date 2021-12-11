@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -98,12 +101,23 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public String getPosts(@ModelAttribute SearchSettings searchSettings, @RequestParam(required = false) String id, Model model) {
-        if(id!=null && id.length()>0) {
-            return String.format("redirect:/post/%s", id);
-        }
+    public String getPosts(
+        @Valid @ModelAttribute SearchSettings searchSettings,
+        Errors errors,
+        Model model
+    ) {
+        String id = searchSettings.getId();
+        List<Post> posts;
+        
+        if(errors.hasErrors()) {
+            posts = postManager.getPosts();
 
-        List<Post> posts = postManager.getPosts(searchSettings);
+        } else if(id!=null && id.length()>0) {
+            return String.format("redirect:/post/%s", id);
+
+        } else {
+            posts = postManager.getPosts(searchSettings);
+        }
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("posts", posts),
