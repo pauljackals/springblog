@@ -224,8 +224,7 @@ body {
     justify-content: center;
     margin-bottom: 30px;
 }
-/* .post-new-button-wrapper a {
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-} */
+
+.error-message {
+    color: red;
+}

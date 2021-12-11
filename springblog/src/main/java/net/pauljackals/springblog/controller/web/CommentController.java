@@ -2,9 +2,12 @@ package net.pauljackals.springblog.controller.web;
 
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +29,19 @@ public class CommentController {
     }
 
     @PostMapping("/post/{idPostPath}")
-    public String addComment(@PathVariable("idPostPath") String idPost, @ModelAttribute Comment comment) {
+    public String addComment(
+        @PathVariable("idPostPath") String idPost,
+        @Valid @ModelAttribute("commentTemplate") Comment comment,
+        Errors errors,
+        Model model
+    ) {
         Post post = postManager.getPost(idPost);
+        if(errors.hasErrors()) {
+            model.addAllAttributes(Map.ofEntries(
+                Map.entry("post", post)
+            ));
+            return "post";
+        }
         Comment commentNew = commentManager.addComment(comment);
         post.addComment(commentNew);
 
@@ -57,10 +71,26 @@ public class CommentController {
     }
 
     @PostMapping("/post/{idPostPath}/comment/{idPath}/edit")
-    public String updateComment(@PathVariable("idPostPath") String idPost, @PathVariable("idPath") String id, @ModelAttribute Comment commentUpdated) {
+    public String updateComment(
+        @PathVariable("idPostPath") String idPost,
+        @PathVariable("idPath") String id,
+        @Valid @ModelAttribute("commentEdited") Comment commentEdited,
+        Errors errors,
+        Model model
+    ) {
         Post post = postManager.getPost(idPost);
-        Comment comment = commentManager.updateComment(id, commentUpdated);
+        Comment comment = commentManager.getComment(id);
+        if(errors.hasErrors()) {
+            commentEdited.setId(id);
+            commentEdited.setUser(comment.getUser());
+            model.addAllAttributes(Map.ofEntries(
+                Map.entry("post", post),
+                Map.entry("commentTemplate", new Comment())
+            ));
+            return "post";
+        }
+        Comment commentUpdated = commentManager.updateComment(id, commentEdited);
 
-        return String.format("redirect:/post/%s#c_%s", post.getId(), comment.getId());
+        return String.format("redirect:/post/%s#c_%s", post.getId(), commentUpdated.getId());
     }
 }

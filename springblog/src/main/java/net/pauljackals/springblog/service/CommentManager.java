@@ -42,19 +42,18 @@ public class CommentManager {
 
     public Comment addComment(Comment comment, boolean isFromCSV) {
         Comment commentNew;
+        User user = userManager.createUserIfNew(comment.getUsername());
         if(!isFromCSV) {
             commentNew = new Comment(
                 UUID.randomUUID().toString(),
-                comment.getUsername(),
-                comment.getCommentContent()
+                comment.getCommentContent(),
+                user
             );
         } else {
             comment.setId(UUID.randomUUID().toString());
+            comment.setUser(user);
             commentNew = comment;
         }
-
-        User user = userManager.createUserIfNew(commentNew.getUsername());
-        commentNew.setUser(user);
         
         comments.add(commentNew);
         return commentNew;

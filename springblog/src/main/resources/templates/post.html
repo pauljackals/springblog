@@ -13,8 +13,12 @@
         <th:block th:insert="fragments/post"></th:block>
         <div class="form-comment">
             <form action="#" method="post" th:action="@{/post/{idPost}(idPost=${post.id})}" th:object="${commentTemplate}">
+                <span class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
                 <input type="text" th:field="*{username}" placeholder="username">
+
+                <span class="error-message" th:if="${#fields.hasErrors('commentContent')}" th:errors="*{commentContent}"></span>
                 <textarea th:field="*{commentContent}" placeholder="comment"></textarea>
+                
                 <input type="submit" value="send">
             </form>
         </div>
