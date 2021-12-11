@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Post;
-import net.pauljackals.springblog.domain.UsernameFilter;
+import net.pauljackals.springblog.domain.helpers.UsernameFilter;
 import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.PostManager;
 

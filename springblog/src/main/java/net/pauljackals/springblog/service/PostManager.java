@@ -15,10 +15,10 @@ import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.PostAuthor;
-import net.pauljackals.springblog.domain.PostsWithComments;
-import net.pauljackals.springblog.domain.SearchSettings;
-import net.pauljackals.springblog.domain.Sorting;
 import net.pauljackals.springblog.domain.User;
+import net.pauljackals.springblog.domain.helpers.PostsWithComments;
+import net.pauljackals.springblog.domain.helpers.SearchSettings;
+import net.pauljackals.springblog.domain.helpers.Sorting;
 
 @Service
 @Getter

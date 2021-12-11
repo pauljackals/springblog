@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
-import net.pauljackals.springblog.domain.SearchSettings;
+import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.PostManager;
 
