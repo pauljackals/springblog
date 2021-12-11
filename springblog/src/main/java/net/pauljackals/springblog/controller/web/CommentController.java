@@ -37,9 +37,7 @@ public class CommentController {
     ) {
         Post post = postManager.getPost(idPost);
         if(errors.hasErrors()) {
-            model.addAllAttributes(Map.ofEntries(
-                Map.entry("post", post)
-            ));
+            model.addAttribute("post", post);
             return "post";
         }
         Comment commentNew = commentManager.addComment(comment);
