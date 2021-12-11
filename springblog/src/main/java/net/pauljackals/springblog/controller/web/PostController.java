@@ -1,5 +1,6 @@
 package net.pauljackals.springblog.controller.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,37 +13,48 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.SearchSettings;
+import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.PostManager;
 
 @Controller
 public class PostController {
     private PostManager postManager;
+    private AuthorManager authorManager;
 
-    public PostController(@Autowired PostManager postManager) {
+    public PostController(
+        @Autowired PostManager postManager,
+        @Autowired AuthorManager authorManager
+    ) {
         this.postManager = postManager;
+        this.authorManager = authorManager;
     }
 
-    @GetMapping("/post/add")
+    @GetMapping("/post")
     public String addPostForm(Model model) {
         model.addAllAttributes(Map.ofEntries(
-            Map.entry("formURL", "/post/add"),
             Map.entry("post", new Post()),
-            Map.entry("submitText", "post")
+            Map.entry("authorsString", "")
         ));
 
         return "postForm";
     }
 
-    @PostMapping("/post/add")
+    @PostMapping("/post")
     public String addPost(@RequestParam String authorsString, @ModelAttribute Post post, Model model) {
-        // model.addAllAttributes(Map.ofEntries(
-        //     Map.entry("test", "test")
-        // ));
+        String[] usernames = authorsString.split(" ");
+        List<Author> authors = new ArrayList<>();
+        for (String username : usernames) {
+            Author author = authorManager.getAuthorByUsername(username);
+            authors.add(author);
+        }
+        post.addAuthors(authors);
+        Post postNew = postManager.addPost(post);
 
-        return "redirect:/post";
+        return String.format("redirect:/post/%s", postNew.getId());
     }
 
     @GetMapping("/post/{id}")
@@ -56,7 +68,7 @@ public class PostController {
         return "post";
     }
 
-    @GetMapping(path = {"/", "/post"})
+    @GetMapping("/")
     public String getPosts(@ModelAttribute SearchSettings searchSettings, @RequestParam(required = false) String id, Model model) {
         if(id!=null && id.length()>0) {
             return String.format("redirect:/post/%s", id);
@@ -75,6 +87,6 @@ public class PostController {
     public String removePost(@PathVariable String id) {
         postManager.removePost(id);
 
-        return "redirect:/post";
+        return "redirect:/";
     }
 }

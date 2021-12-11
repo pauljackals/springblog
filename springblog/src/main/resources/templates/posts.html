@@ -11,14 +11,14 @@
     <th:block th:insert="fragments/navbar"></th:block>
     <div class="search">
         <h3>specific post</h3>
-        <form action="#" method="get" th:action="@{/post}">
+        <form action="#" method="get" th:action="@{/}">
             <input type="text" name="id" placeholder="id">
             <input type="submit" value="search">
         </form>
     </div>
     <div class="search">
         <h3>search settings</h3>
-        <form action="#" method="get" th:action="@{/post}" th:object="${searchSettings}">
+        <form action="#" method="get" th:action="@{/}" th:object="${searchSettings}">
             <input type="text" th:field="*{tag}" placeholder="tag">
             <input type="text" th:field="*{authors}" placeholder="author1 author2...">
             <input type="text" th:field="*{word}" placeholder="word">
@@ -26,7 +26,7 @@
         </form>
     </div>
     <div class="post-new-button-wrapper">
-        <a th:href="@{/post/add}"><button>add new post</button></a>
+        <a th:href="@{/post}"><button>add new post</button></a>
     </div>
     <div class="posts">
         <th:block th:each="post : ${posts}" th:insert="fragments/post"></th:block>

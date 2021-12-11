@@ -43,13 +43,13 @@ public class AuthorManager {
         return addAuthor(author, false);
     }
 
-    public List<Author> getAuthors(String username) {
-        if(username==null || username.length()==0) {
+    public List<Author> getAuthors(String usernamePart) {
+        if(usernamePart==null || usernamePart.length()==0) {
             return this.authors;
         }
         List<Author> authors = new ArrayList<>();
         for (Author author : this.authors) {
-            if(author.getUsername().contains(username)) {
+            if(author.getUsername().contains(usernamePart)) {
                 authors.add(author);
             }
         }
@@ -60,6 +60,16 @@ public class AuthorManager {
         Author authorToReturn = null;
         for (Author author : authors) {
             if(author.getId().equals(id)) {
+                authorToReturn = author;
+                break;
+            }
+        }
+        return authorToReturn;
+    }
+    public Author getAuthorByUsername(String username) {
+        Author authorToReturn = null;
+        for (Author author : authors) {
+            if(author.getUsername().equals(username)) {
                 authorToReturn = author;
                 break;
             }

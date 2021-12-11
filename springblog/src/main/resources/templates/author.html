@@ -21,7 +21,7 @@
                 <td th:text="${posts.size()}"></td>
             </tr>
         </table>
-        <a th:href="@{/post(authors=${author.username})}">
+        <a th:href="@{/(authors=${author.username})}">
             <button>go to posts</button>
         </a>
     </div>

@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="isEdited=${isEdited!=null && isEdited}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <title>Post Form</title>
+    <title th:text="${isEdited ? 'Edit Post' : 'New Post'}"></title>
 </head>
 <body>
     <th:block th:insert="fragments/navbar"></th:block>
     <div class="post-details">
         <div class="form-post">
-            <form action="#" th:action="@{${formURL}}" method="post" th:object="${post}">
-                <input class="input-wider" type="text" name="authorsString" placeholder="author1 author2...">
+            <form action="#" th:action="@{${'/post' + (isEdited ? '/123/edit' : '')}}" method="post" th:object="${post}">
+                <input class="input-wider" type="text" name="authorsString" th:value="${authorsString}" placeholder="author1 author2...">
                 <textarea th:field="*{postContent}" placeholder="content"></textarea>
                 <input class="input-wider" type="text" th:field="*{tags}" placeholder="tag1 tag2...">
-                <input type="submit" th:value="${submitText}">
+                <input type="submit" th:value="${isEdited ? 'update' : 'post'}">
             </form>
         </div>
     </div>

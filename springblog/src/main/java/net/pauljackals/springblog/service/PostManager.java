@@ -154,7 +154,8 @@ public class PostManager {
             postNew = new Post(
                 UUID.randomUUID().toString(),
                 post.getPostContent(),
-                post.getTags()
+                post.getTags(),
+                post.getAuthors()
             );
         } else {
             post.setId(UUID.randomUUID().toString());

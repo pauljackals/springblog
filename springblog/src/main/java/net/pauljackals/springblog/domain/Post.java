@@ -6,22 +6,26 @@ import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class Post {
-    @NonNull private String id;
-    @NonNull private String postContent;
-    @NonNull private String tags;
+    private String id;
+    private String postContent;
+    private String tags;
     private List<Author> authors = Collections.synchronizedList(new ArrayList<>());
     private List<Attachment> attachments = Collections.synchronizedList(new ArrayList<>());
     private List<Comment> comments = Collections.synchronizedList(new ArrayList<>());
     private int idCSV = -1;
 
-    public Post(int idCSV, @NonNull String postContent, @NonNull String tags) {
+    public Post(String id, String postContent, String tags, List<Author> authors) {
+        this.id = id;
+        this.postContent = postContent;
+        this.tags = tags;
+        this.authors.addAll(authors);
+    }
+
+    public Post(int idCSV, String postContent, String tags) {
         this.postContent = postContent;
         this.tags = tags;
         this.idCSV = idCSV;
@@ -29,6 +33,9 @@ public class Post {
 
     public void addAuthor(Author author) {
         authors.add(author);
+    }
+    public void addAuthors(List<Author> authors) {
+        this.authors.addAll(authors);
     }
 
     public void addAttachment(Attachment attachment) {
