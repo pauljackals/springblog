@@ -19,6 +19,9 @@
     <div class="search">
         <h3>search settings</h3>
         <form action="#" method="get" th:action="@{/}" th:object="${searchSettings}">
+            <th:block th:insert="fragments/selectSearch :: fragment('sort by comments number', sortByComments)"></th:block>
+            <th:block th:insert="fragments/selectSearch :: fragment('sort by authors number', sortByAuthors)"></th:block>
+            <th:block th:insert="fragments/selectSearch :: fragment('sort by content', sortByContent)"></th:block>
             <input type="text" th:field="*{tag}" placeholder="tag">
             <input type="text" th:field="*{authors}" placeholder="author1 author2...">
             <input type="text" th:field="*{word}" placeholder="word">

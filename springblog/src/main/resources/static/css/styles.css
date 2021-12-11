@@ -196,8 +196,15 @@ body {
     margin-right: auto;
     margin-left: auto;
 }
-.search input:not([type="submit"]), .search h3 {
+.search input:not([type="submit"]), .search h3, .select-search {
     margin-bottom: 5px;
+}
+.select-search {
+    display: flex;
+    justify-content: center;
+}
+.select-search label {
+    margin-right: 5px;
 }
 
 .users {

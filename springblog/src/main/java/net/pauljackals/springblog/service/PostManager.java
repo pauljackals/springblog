@@ -2,6 +2,7 @@ package net.pauljackals.springblog.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.PostAuthor;
 import net.pauljackals.springblog.domain.PostsWithComments;
 import net.pauljackals.springblog.domain.SearchSettings;
+import net.pauljackals.springblog.domain.Sorting;
 import net.pauljackals.springblog.domain.User;
 
 @Service
@@ -79,10 +81,10 @@ public class PostManager {
 
     public List<Post> getPosts(SearchSettings searchSettings) {
         List<Post> posts = new ArrayList<>();
+        String tag = searchSettings.getTag();
+        String authors = searchSettings.getAuthors();
+        String word = searchSettings.getWord();
         for (Post post : this.posts) {
-            String tag = searchSettings.getTag();
-            String authors = searchSettings.getAuthors();
-            String word = searchSettings.getWord();
 
             if(tag!=null && tag.length()>0 && !post.getTags().matches(String.format("(.+ )?%s( .+)?", tag))) {
                 continue;
@@ -105,6 +107,38 @@ public class PostManager {
             }
             posts.add(post);
         }
+
+        if(posts.size()>1) {
+            Sorting sortByComments = searchSettings.getSortByComments();
+            Sorting sortByAuthors = searchSettings.getSortByAuthors();
+            Sorting sortByContent = searchSettings.getSortByContent();
+            Comparator<Post> comparator = null;
+
+            if(sortByComments!=null && !sortByComments.equals(Sorting.OFF)) {
+                int modifier = sortByComments.equals(Sorting.ASCENDING) ? -1 : 1;
+                comparator = Comparator.comparing(Post::getComments, (a, b) -> (a.size() - b.size())*modifier);
+            }
+            if(sortByAuthors!=null && !sortByAuthors.equals(Sorting.OFF)) {
+                int modifier = sortByAuthors.equals(Sorting.ASCENDING) ? -1 : 1;
+                if(comparator==null) {
+                    comparator = Comparator.comparing(Post::getAuthors, (a, b) -> (a.size() - b.size())*modifier);
+                } else {
+                    comparator = comparator.thenComparing(Post::getAuthors, (a, b) -> (a.size() - b.size())*modifier);
+                }
+            }
+            if(sortByContent!=null && !sortByContent.equals(Sorting.OFF)) {
+                int modifier = sortByContent.equals(Sorting.ASCENDING) ? -1 : 1;
+                if(comparator==null) {
+                    comparator = Comparator.comparing(Post::getPostContent, (a, b) -> a.compareTo(b)*modifier);
+                } else {
+                    comparator = comparator.thenComparing(Post::getPostContent, (a, b) -> a.compareTo(b)*modifier);
+                }
+            }
+            if(comparator!=null) {
+                Collections.sort(posts, comparator);
+            }
+        }
+
         return posts;
     }
 
