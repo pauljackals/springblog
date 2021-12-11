@@ -38,6 +38,11 @@ public class Post {
         this.authors.addAll(authors);
     }
 
+    public void setAuthors(List<Author> authors) {
+        this.authors.clear();
+        addAuthors(authors);
+    }
+
     public void addAttachment(Attachment attachment) {
         attachments.add(attachment);
     }

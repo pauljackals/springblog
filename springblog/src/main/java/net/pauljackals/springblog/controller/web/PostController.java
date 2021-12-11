@@ -33,6 +33,15 @@ public class PostController {
         this.authorManager = authorManager;
     }
 
+    private List<Author> getAuthorsByUsernames(String[] usernames) {
+        List<Author> authors = new ArrayList<>();
+        for (String username : usernames) {
+            Author author = authorManager.getAuthorByUsername(username);
+            authors.add(author);
+        }
+        return authors;
+    }
+
     @GetMapping("/post")
     public String addPostForm(Model model) {
         model.addAllAttributes(Map.ofEntries(
@@ -44,13 +53,8 @@ public class PostController {
     }
 
     @PostMapping("/post")
-    public String addPost(@RequestParam String authorsString, @ModelAttribute Post post, Model model) {
-        String[] usernames = authorsString.split(" ");
-        List<Author> authors = new ArrayList<>();
-        for (String username : usernames) {
-            Author author = authorManager.getAuthorByUsername(username);
-            authors.add(author);
-        }
+    public String addPost(@ModelAttribute Post post, @RequestParam String authorsString, Model model) {
+        List<Author> authors = getAuthorsByUsernames(authorsString.split(" "));
         post.addAuthors(authors);
         Post postNew = postManager.addPost(post);
 
@@ -58,7 +62,7 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}/edit")
-    public String editPost(@PathVariable String id, Model model) {
+    public String editPostForm(@PathVariable String id, Model model) {
         Post post = postManager.getPost(id);
         List<String> authorsUsernames = new ArrayList<>();
         for (Author author : post.getAuthors()) {
@@ -71,6 +75,15 @@ public class PostController {
             Map.entry("isEdited", true)
         ));
         return "postForm";
+    }
+
+    @PostMapping("/post/{id}/edit")
+    public String editPost(@PathVariable String id, @ModelAttribute Post post, @RequestParam String authorsString, Model model) {
+        List<Author> authors = getAuthorsByUsernames(authorsString.split(" "));
+        post.addAuthors(authors);
+        Post postUpdated = postManager.updatePost(id, post);
+
+        return String.format("redirect:/post/%s", postUpdated.getId());
     }
 
     @GetMapping("/post/{id}")

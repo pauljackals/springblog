@@ -183,4 +183,16 @@ public class PostManager {
 
         return post;
     }
+
+    public Post updatePost(String id, Post postUpdated) {
+        Post post = getPost(id);
+
+        if(post != null) {
+            post.setPostContent(postUpdated.getPostContent());
+            post.setTags(postUpdated.getTags());
+            post.setAuthors(postUpdated.getAuthors());
+        }
+
+        return post;
+    }
 }
