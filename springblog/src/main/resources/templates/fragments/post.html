@@ -5,6 +5,9 @@
 <body>
     <div class="post" th:attr="id=${'p_' + post.id}">
         <div class="config-buttons-wrapper">
+            <a th:href="@{/post/{id}/edit(id=${post.id})}">
+                <button>edit</button>
+            </a>
             <a th:href="@{/post/{id}/delete(id=${post.id})}">
                 <button>X</button>
             </a>

@@ -11,7 +11,15 @@
     <th:block th:insert="fragments/navbar"></th:block>
     <div class="post-details">
         <div class="form-post">
-            <form action="#" th:action="@{${'/post' + (isEdited ? '/123/edit' : '')}}" method="post" th:object="${post}">
+            <div class="config-buttons-wrapper">
+                <a th:href="@{${isEdited ? '/post/'+post.id : '/'}}">
+                    <button>cancel</button>
+                </a>
+                <a th:if="${isEdited}" th:href="@{/post/{id}/delete(id=${post.id})}">
+                    <button>X</button>
+                </a>
+            </div>
+            <form action="#" th:action="@{${'/post' + (isEdited ? '/'+post.id+'/edit' : '')}}" method="post" th:object="${post}">
                 <input class="input-wider" type="text" name="authorsString" th:value="${authorsString}" placeholder="author1 author2...">
                 <textarea th:field="*{postContent}" placeholder="content"></textarea>
                 <input class="input-wider" type="text" th:field="*{tags}" placeholder="tag1 tag2...">

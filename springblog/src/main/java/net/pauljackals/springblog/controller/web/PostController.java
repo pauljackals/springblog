@@ -57,6 +57,22 @@ public class PostController {
         return String.format("redirect:/post/%s", postNew.getId());
     }
 
+    @GetMapping("/post/{id}/edit")
+    public String editPost(@PathVariable String id, Model model) {
+        Post post = postManager.getPost(id);
+        List<String> authorsUsernames = new ArrayList<>();
+        for (Author author : post.getAuthors()) {
+            authorsUsernames.add(author.getUsername());
+        }
+
+        model.addAllAttributes(Map.ofEntries(
+            Map.entry("post", post),
+            Map.entry("authorsString", String.join(" ", authorsUsernames)),
+            Map.entry("isEdited", true)
+        ));
+        return "postForm";
+    }
+
     @GetMapping("/post/{id}")
     public String getPost(@PathVariable String id, Model model) {
         Post post = postManager.getPost(id);
