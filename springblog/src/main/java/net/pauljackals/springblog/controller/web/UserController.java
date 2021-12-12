@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import net.pauljackals.springblog.controller.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.domain.User;
 import net.pauljackals.springblog.domain.helpers.PostsWithComments;
 import net.pauljackals.springblog.domain.helpers.UsernameFilter;
@@ -60,6 +61,11 @@ public class UserController {
     @GetMapping("/user/{id}")
     public String getUser(@PathVariable String id, Model model) {
         User user = userManager.getUser(id);
+
+        if(user==null) {
+            throw new ResourceNotFoundException();
+        }
+
         PostsWithComments postsWithComments = postManager.getPostsWithComments(user);
 
         model.addAllAttributes(Map.ofEntries(

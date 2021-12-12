@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import net.pauljackals.springblog.controller.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.helpers.UsernameFilter;
@@ -60,6 +61,11 @@ public class AuthorController {
     @GetMapping("/author/{id}")
     public String getAuthor(@PathVariable String id, Model model) {
         Author author = authorManager.getAuthor(id);
+
+        if(author==null) {
+            throw new ResourceNotFoundException();
+        }
+
         List<Post> posts = postManager.getPosts(author);
 
         model.addAllAttributes(Map.ofEntries(

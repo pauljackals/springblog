@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import net.pauljackals.springblog.controller.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
@@ -96,6 +97,11 @@ public class PostController {
     @GetMapping("/post/{id}/edit")
     public String editPostForm(@PathVariable String id, Model model) {
         Post post = postManager.getPost(id);
+
+        if(post==null) {
+            throw new ResourceNotFoundException();
+        }
+
         List<String> authorsUsernames = new ArrayList<>();
         for (Author author : post.getAuthors()) {
             authorsUsernames.add(author.getUsername());
@@ -118,6 +124,10 @@ public class PostController {
         Errors errorsPostExtras,
         Model model
     ) {
+        if(postManager.getPost(id)==null) {
+            throw new ResourceNotFoundException();
+        }
+
         String authorsString = postExtras.getAuthorsString();
         List<Author> authors = getAuthorsByUsernames(authorsString);
         validateAuthors(authorsString, authors, errorsPostExtras, "authorsString");
@@ -136,6 +146,10 @@ public class PostController {
     @GetMapping("/post/{id}")
     public String getPost(@PathVariable String id, Model model) {
         Post post = postManager.getPost(id);
+
+        if(post==null) {
+            throw new ResourceNotFoundException();
+        }
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", post),
@@ -172,7 +186,9 @@ public class PostController {
 
     @GetMapping("/post/{id}/delete")
     public String removePost(@PathVariable String id) {
-        postManager.removePost(id);
+        if(postManager.removePost(id)==null) {
+            throw new ResourceNotFoundException();
+        }
 
         return "redirect:/";
     }

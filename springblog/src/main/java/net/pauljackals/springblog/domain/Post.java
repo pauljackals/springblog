@@ -65,7 +65,7 @@ public class Post {
     public void addComment(Comment comment) {
         comments.add(comment);
     }
-    public void removeComment(Comment comment) {
-        comments.remove(comment);
+    public boolean removeComment(Comment comment) {
+        return comments.remove(comment);
     }
 }

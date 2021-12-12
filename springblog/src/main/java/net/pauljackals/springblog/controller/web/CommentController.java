@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import net.pauljackals.springblog.controller.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.service.CommentManager;
@@ -36,6 +37,11 @@ public class CommentController {
         Model model
     ) {
         Post post = postManager.getPost(idPost);
+
+        if(post==null) {
+            throw new ResourceNotFoundException();
+        }
+
         if(errors.hasErrors()) {
             model.addAttribute("post", post);
             return "post";
@@ -49,8 +55,15 @@ public class CommentController {
     @GetMapping("/post/{idPostPath}/comment/{id}/delete")
     public String removeComment(@PathVariable("idPostPath") String idPost, @PathVariable("id") String id) {
         Post post = postManager.getPost(idPost);
-        Comment comment = commentManager.removeComment(id);
-        post.removeComment(comment);
+        if(post==null) {
+            throw new ResourceNotFoundException();
+        }
+
+        Comment comment = commentManager.getComment(id);
+        if(comment==null || !post.removeComment(comment)) {
+            throw new ResourceNotFoundException();
+        }
+        commentManager.removeComment(comment);
 
         return String.format("redirect:/post/%s", post.getId());
     }
@@ -59,6 +72,10 @@ public class CommentController {
     public String getCommentEdit(@PathVariable String idPost, @PathVariable String id, Model model) {
         Post post = postManager.getPost(idPost);
         Comment comment = commentManager.getComment(id);
+
+        if(post==null || comment==null) {
+            throw new ResourceNotFoundException();
+        }
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", post),
@@ -78,6 +95,11 @@ public class CommentController {
     ) {
         Post post = postManager.getPost(idPost);
         Comment comment = commentManager.getComment(id);
+
+        if(post==null || comment==null) {
+            throw new ResourceNotFoundException();
+        }
+
         if(errors.hasErrors()) {
             commentEdited.setId(id);
             commentEdited.setUser(comment.getUser());
