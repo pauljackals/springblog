@@ -24,9 +24,16 @@
             <th:block th:insert="fragments/selectSearch :: fragment('sort by comments number', sortByComments)"></th:block>
             <th:block th:insert="fragments/selectSearch :: fragment('sort by authors number', sortByAuthors)"></th:block>
             <th:block th:insert="fragments/selectSearch :: fragment('sort by content', sortByContent)"></th:block>
+
+            <span class="error-message center" th:if="${#fields.hasErrors('tag')}" th:errors="*{tag}"></span>
             <input type="text" th:field="*{tag}" placeholder="tag">
+
+            <span class="error-message center" th:if="${#fields.hasErrors('authors')}" th:errors="*{authors}"></span>
             <input type="text" th:field="*{authors}" placeholder="author1 author2...">
+            
+            <span class="error-message center" th:if="${#fields.hasErrors('word')}" th:errors="*{word}"></span>
             <input type="text" th:field="*{word}" placeholder="word">
+
             <input type="submit" value="apply">
         </form>
     </div>
