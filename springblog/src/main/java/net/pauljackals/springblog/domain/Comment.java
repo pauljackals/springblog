@@ -1,6 +1,7 @@
 package net.pauljackals.springblog.domain;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import lombok.Data;
@@ -11,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class Comment {
     private String id;
 
-    @NotEmpty(message = "username must not be empty")
     @Size(max = 32, message = "username must have no more than 32 characters")
+    @Pattern(regexp = "^\\w+$", message = "username must contain only letters and numbers")
     private String username;
 
     @NotEmpty(message = "comment must not be empty")
