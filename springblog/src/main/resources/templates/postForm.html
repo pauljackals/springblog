@@ -20,7 +20,10 @@
                 </a>
             </div>
             <form action="#" th:action="@{${'/post' + (isEdited ? '/'+post.id+'/edit' : '')}}" method="post" th:object="${post}">
-                <input class="input-wider" type="text" name="authorsString" th:value="${authorsString}" placeholder="author1 author2...">
+                <th:block th:object="${postExtras}">
+                    <span class="error-message" th:if="${#fields.hasErrors('authorsString')}" th:errors="*{authorsString}"></span>
+                    <input class="input-wider" type="text" th:field="*{authorsString}" placeholder="author1 author2...">
+                </th:block>
                 <textarea th:field="*{postContent}" placeholder="content"></textarea>
                 <input class="input-wider" type="text" th:field="*{tags}" placeholder="tag1 tag2...">
                 <input type="submit" th:value="${isEdited ? 'update' : 'post'}">

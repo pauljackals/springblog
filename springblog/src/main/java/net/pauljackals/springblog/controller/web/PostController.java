@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
+import net.pauljackals.springblog.domain.helpers.PostExtras;
 import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.PostManager;
@@ -36,7 +37,8 @@ public class PostController {
         this.authorManager = authorManager;
     }
 
-    private List<Author> getAuthorsByUsernames(String[] usernames) {
+    private List<Author> getAuthorsByUsernames(String usernamesRaw) {
+        String[] usernames = usernamesRaw.split(" ");
         List<Author> authors = new ArrayList<>();
         for (String username : usernames) {
             Author author = authorManager.getAuthorByUsername(username);
@@ -44,20 +46,49 @@ public class PostController {
         }
         return authors;
     }
+    private void validateAuthors(String usernamesRaw, List<Author> authors, Errors errors, String field) {
+        if(authors.size()>8) {
+            errors.rejectValue(field, "AUTHORS_TOO_MANY", "authors limit is 8");
+            return;
+        }
+
+        String[] usernames = usernamesRaw.split(" ");
+        List<String> usernamesMissing = new ArrayList<>();
+        for (int i = 0; i < authors.size(); i++) {
+            if(authors.get(i)==null) {
+                usernamesMissing.add(usernames[i]);
+            }
+        }
+        if(usernamesMissing.size()>0) {
+            errors.rejectValue(field, "AUTHORS_NOT_FOUND", String.format("authors do not exist: %s", String.join(", ", usernamesMissing)));
+        }
+    }
 
     @GetMapping("/post")
     public String addPostForm(Model model) {
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", new Post()),
-            Map.entry("authorsString", "")
+            Map.entry("postExtras", new PostExtras())
         ));
 
         return "postForm";
     }
 
     @PostMapping("/post")
-    public String addPost(@ModelAttribute Post post, @RequestParam String authorsString, Model model) {
-        List<Author> authors = getAuthorsByUsernames(authorsString.split(" "));
+    public String addPost(
+        @ModelAttribute Post post,
+        @ModelAttribute PostExtras postExtras,
+        Errors errors,
+        Model model
+    ) {
+        String authorsString = postExtras.getAuthorsString();
+        List<Author> authors = getAuthorsByUsernames(authorsString);
+        validateAuthors(authorsString, authors, errors, "authorsString");
+
+        if(errors.hasErrors()) {
+            return "postForm";
+        }
+
         post.addAuthors(authors);
         Post postNew = postManager.addPost(post);
 
@@ -82,7 +113,7 @@ public class PostController {
 
     @PostMapping("/post/{id}/edit")
     public String editPost(@PathVariable String id, @ModelAttribute Post post, @RequestParam String authorsString, Model model) {
-        List<Author> authors = getAuthorsByUsernames(authorsString.split(" "));
+        List<Author> authors = getAuthorsByUsernames(authorsString);
         post.addAuthors(authors);
         Post postUpdated = postManager.updatePost(id, post);
 
@@ -108,11 +139,6 @@ public class PostController {
     ) {
         String id = searchSettings.getId();
         List<Post> posts;
-        
-        // String authors = searchSettings.getAuthors();
-        // if(authors!=null && !errors.hasFieldErrors("authors")) {
-            
-        // }
         
         if(errors.hasErrors()) {
             posts = postManager.getPosts();
