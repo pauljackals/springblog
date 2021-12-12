@@ -13,6 +13,7 @@ public class SearchSettings {
     @Pattern(regexp = "^|\\S+$", message = "tag must not contain any whitespace characters")
     private String tag;
 
+    @Size(max = 263, message = "field must be no longer than 263 characters")
     @Pattern(regexp = "^|\\w+( \\w+)*$", message = "usernames contain only letters and numbers")
     private String authors;
 
