@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
@@ -104,15 +103,30 @@ public class PostController {
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", post),
-            Map.entry("authorsString", String.join(" ", authorsUsernames)),
+            Map.entry("postExtras", new PostExtras(String.join(" ", authorsUsernames))),
             Map.entry("isEdited", true)
         ));
         return "postForm";
     }
 
     @PostMapping("/post/{id}/edit")
-    public String editPost(@PathVariable String id, @ModelAttribute Post post, @RequestParam String authorsString, Model model) {
+    public String editPost(
+        @PathVariable String id,
+        @Valid @ModelAttribute Post post,
+        Errors errorsPost,
+        @Valid @ModelAttribute PostExtras postExtras,
+        Errors errorsPostExtras,
+        Model model
+    ) {
+        String authorsString = postExtras.getAuthorsString();
         List<Author> authors = getAuthorsByUsernames(authorsString);
+        validateAuthors(authorsString, authors, errorsPostExtras, "authorsString");
+
+        if(errorsPost.hasErrors() || errorsPostExtras.hasErrors()) {
+            model.addAttribute("isEdited", true);
+            return "postForm";
+        }
+
         post.addAuthors(authors);
         Post postUpdated = postManager.updatePost(id, post);
 
