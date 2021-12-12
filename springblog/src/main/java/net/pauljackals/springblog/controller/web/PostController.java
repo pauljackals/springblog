@@ -47,11 +47,9 @@ public class PostController {
         return authors;
     }
     private void validateAuthors(String usernamesRaw, List<Author> authors, Errors errors, String field) {
-        if(authors.size()>8) {
-            errors.rejectValue(field, "AUTHORS_TOO_MANY", "authors limit is 8");
+        if(errors.hasFieldErrors(field)) {
             return;
         }
-
         String[] usernames = usernamesRaw.split(" ");
         List<String> usernamesMissing = new ArrayList<>();
         for (int i = 0; i < authors.size(); i++) {
@@ -76,16 +74,17 @@ public class PostController {
 
     @PostMapping("/post")
     public String addPost(
-        @ModelAttribute Post post,
-        @ModelAttribute PostExtras postExtras,
-        Errors errors,
+        @Valid @ModelAttribute Post post,
+        Errors errorsPost,
+        @Valid @ModelAttribute PostExtras postExtras,
+        Errors errorsPostExtras,
         Model model
     ) {
         String authorsString = postExtras.getAuthorsString();
         List<Author> authors = getAuthorsByUsernames(authorsString);
-        validateAuthors(authorsString, authors, errors, "authorsString");
+        validateAuthors(authorsString, authors, errorsPostExtras, "authorsString");
 
-        if(errors.hasErrors()) {
+        if(errorsPost.hasErrors() || errorsPostExtras.hasErrors()) {
             return "postForm";
         }
 

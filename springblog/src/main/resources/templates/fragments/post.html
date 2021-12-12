@@ -20,7 +20,7 @@
         <div class="authors">
             <a th:each="author : ${post.authors}" th:href="@{/author/{id}(id=${author.id})}" th:text="${author.username}" class="author"></a>
         </div>
-        <p th:text="${post.postContent}"></p>
+        <p class="content" th:text="${post.postContent}"></p>
         <th:block th:switch="${posts==null}">
             <ul th:case="true">
                 <li th:each="attachment : ${post.attachments}" th:text="${attachment.filename}"></li>

@@ -1,4 +1,4 @@
-package net.pauljackals.springblog.validators.authors;
+package net.pauljackals.springblog.validators.elements;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,13 +9,11 @@ import java.lang.annotation.Target;
  
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = AuthorsValidator.class)
-public @interface Authors {
- 
-    String message() default "usernames must not be duplicated";
- 
+@Constraint(validatedBy = ElementsValidator.class)
+public @interface Elements {
+    String message() default "elements limit is {limit}";
     Class<?>[] groups() default {};
- 
     Class<? extends Payload>[] payload() default {};
- 
+
+    int limit();
 }

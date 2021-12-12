@@ -225,6 +225,10 @@ body {
     margin-bottom: 30px;
 }
 
+.content {
+    overflow-wrap: break-word;
+}
+
 .error-message {
     color: red;
 }
