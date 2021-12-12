@@ -5,6 +5,7 @@ import javax.validation.constraints.Size;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.pauljackals.springblog.validators.authors.Authors;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +16,7 @@ public class SearchSettings {
 
     @Size(max = 263, message = "field must be no longer than 263 characters")
     @Pattern(regexp = "^|\\w+( \\w+)*$", message = "usernames contain only letters and numbers")
+    @Authors
     private String authors;
 
     @Size(max = 128, message = "word must be no longer than 128 characters")

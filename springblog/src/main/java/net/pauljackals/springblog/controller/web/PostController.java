@@ -109,6 +109,11 @@ public class PostController {
         String id = searchSettings.getId();
         List<Post> posts;
         
+        // String authors = searchSettings.getAuthors();
+        // if(authors!=null && !errors.hasFieldErrors("authors")) {
+            
+        // }
+        
         if(errors.hasErrors()) {
             posts = postManager.getPosts();
 
