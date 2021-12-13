@@ -36,4 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-/src/main/**/beans/*.xml
+/src/main/resources/beans/*.xml
