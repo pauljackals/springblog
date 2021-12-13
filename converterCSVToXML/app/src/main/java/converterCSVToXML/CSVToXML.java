@@ -1,17 +1,23 @@
 package converterCSVToXML;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import lombok.NoArgsConstructor;
 
@@ -43,10 +49,13 @@ public class CSVToXML {
         return className.toString();
     }
 
-    public void run(String beansPath, String beansPackage) throws IOException, CsvException {
-        Stream<Path> pathsStream = Files.list(Paths.get(beansPath + "/csv"));
+    public void run(String beansPackage) throws IOException, CsvException, URISyntaxException {
+        String rootPath = (new File("./data").getCanonicalPath());
+        Stream<Path> pathsStream = Files.list(Paths.get(rootPath, "csv/"));
         List<Path> paths = pathsStream.collect(Collectors.toList());
         pathsStream.close();
+
+        Map<String, String> xmlFiles = new HashMap<>();
 
         for (Path path : paths) {
             String fileName = path.getFileName().toString().replace(".csv", "");
@@ -75,14 +84,18 @@ public class CSVToXML {
                     if(name.equals("id")) {
                         name += "CSV";
                     }
-                    xmlFile.append(String.format("\t\t<constructor-arg name=\"%s\" value=\"%s\"></constructor-arg>\n", name, line[j]));
+                    xmlFile.append(String.format("\t\t<constructor-arg name=\"%s\" value=\"%s\"></constructor-arg>\n", name, StringEscapeUtils.escapeXml10(line[j])));
                 }
                 xmlFile.append("\t</bean>\n");
             }
             xmlFile.append("</beans>\n");
 
-            BufferedWriter writer = Files.newBufferedWriter(Paths.get(beansPath, String.format("%s.xml", fileName)));
-            writer.write(xmlFile.toString());
+            xmlFiles.put(fileName, xmlFile.toString());
+        }
+
+        for(Map.Entry<String, String> entry : xmlFiles.entrySet()) {
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get(rootPath, String.format("%s.xml", entry.getKey())));
+            writer.write(entry.getValue());
             writer.close();
         }
     }

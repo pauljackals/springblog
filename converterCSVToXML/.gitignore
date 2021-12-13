@@ -9,3 +9,5 @@ bin
 .classpath
 .project
 .vscode
+
+app/data/*.xml
