@@ -16,6 +16,10 @@ public class UserManager {
     private List<User> users;
 
     public UserManager() {
+        setup();
+    }
+
+    public void setup() {
         this.users = Collections.synchronizedList(new ArrayList<>());
     }
 

@@ -17,6 +17,10 @@ public class AttachmentManager {
     private List<Attachment> attachments;
     
     public AttachmentManager(@Autowired List<Attachment> attachments) {
+        setup(attachments);
+    }
+    
+    public void setup(List<Attachment> attachments) {
         this.attachments = Collections.synchronizedList(new ArrayList<>());
         for (Attachment attachment : attachments) {
             addAttachment(attachment, true);

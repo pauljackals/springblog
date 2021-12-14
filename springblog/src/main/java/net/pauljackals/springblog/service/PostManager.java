@@ -34,6 +34,16 @@ public class PostManager {
         @Autowired AttachmentManager attachmentManager,
         @Autowired CommentManager commentManager
     ) {
+        setup(posts, postsAuthors, authorManager, attachmentManager, commentManager);
+    }
+
+    public void setup(
+        List<Post> posts,
+        List<PostAuthor> postsAuthors,
+        AuthorManager authorManager,
+        AttachmentManager attachmentManager,
+        CommentManager commentManager
+    ) {
         this.posts = Collections.synchronizedList(new ArrayList<>());
         this.commentManager = commentManager;
         this.attachmentManager = attachmentManager;

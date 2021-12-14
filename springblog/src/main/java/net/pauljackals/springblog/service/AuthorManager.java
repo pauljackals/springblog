@@ -17,6 +17,10 @@ public class AuthorManager {
     private List<Author> authors;
 
     public AuthorManager(@Autowired List<Author> authors) {
+        setup(authors);
+    }
+
+    public void setup(List<Author> authors) {
         this.authors = Collections.synchronizedList(new ArrayList<>());
         for (Author author : authors) {
             addAuthor(author, true);
