@@ -2,13 +2,22 @@ package net.pauljackals.springblog.controller.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
+
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
+import com.opencsv.exceptions.CsvException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,26 +34,44 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.pauljackals.springblog.controller.exceptions.StateExportException;
+import net.pauljackals.springblog.controller.exceptions.StateImportException;
 import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
+import net.pauljackals.springblog.domain.PostAuthor;
+// import net.pauljackals.springblog.domain.helpers.StateFileInfo;
 import net.pauljackals.springblog.domain.helpers.StateFiles;
+import net.pauljackals.springblog.service.AttachmentManager;
 import net.pauljackals.springblog.service.AuthorManager;
+import net.pauljackals.springblog.service.CommentManager;
 import net.pauljackals.springblog.service.PostManager;
+import net.pauljackals.springblog.service.UserManager;
 
 @Controller
 public class StateController {
     private AuthorManager authorManager;
     private PostManager postManager;
+    private CommentManager commentManager;
+    private UserManager userManager;
+    private AttachmentManager attachmentManager;
+
     private String[] filenames;
+    // private Map<String, StateFileInfo<?>> filenamesMap;
 
     public StateController(
         @Autowired AuthorManager authorManager,
-        @Autowired PostManager postManager
+        @Autowired PostManager postManager,
+        @Autowired CommentManager commentManager,
+        @Autowired UserManager userManager,
+        @Autowired AttachmentManager attachmentManager
     ) {
         this.authorManager = authorManager;
         this.postManager = postManager;
+        this.commentManager = commentManager;
+        this.userManager = userManager;
+        this.attachmentManager = attachmentManager;
+
         filenames = new String[] {
             "Posts.csv",
             "Authors.csv",
@@ -52,6 +79,63 @@ public class StateController {
             "Comments.csv",
             "Attachments.csv"
         };
+        // filenamesMap = Map.ofEntries(
+        //     Map.entry(
+        //         "Posts.csv",
+        //         new StateFileInfo<>(
+        //             Post.class,
+        //             Map.ofEntries(
+        //                 Map.entry("id", "idCSV"),
+        //                 Map.entry("post_content", "postContent"),
+        //                 Map.entry("tags", "tags")
+        //             )
+        //         )
+        //     ),
+        //     Map.entry(
+        //         "Authors.csv",
+        //         new StateFileInfo<>(
+        //             Author.class,
+        //             Map.ofEntries(
+        //                 Map.entry("id", "idCSV"),
+        //                 Map.entry("first_name", "firstName"),
+        //                 Map.entry("last_name", "lastName"),
+        //                 Map.entry("username", "username")
+        //             )
+        //         )
+        //     ),
+        //     Map.entry(
+        //         "Posts_Authors.csv",
+        //         new StateFileInfo<>(
+        //             PostAuthor.class,
+        //             Map.ofEntries(
+        //                 Map.entry("id_post", "idPost"),
+        //                 Map.entry("id_author", "idAuthor")
+        //             )
+        //         )
+        //     ),
+        //     Map.entry(
+        //         "Comments.csv",
+        //         new StateFileInfo<>(
+        //             Comment.class,
+        //             Map.ofEntries(
+        //                 Map.entry("id", "idCSV"),
+        //                 Map.entry("username", "username"),
+        //                 Map.entry("id_post", "idPost"),
+        //                 Map.entry("comment_content", "commentContent")
+        //             )
+        //         )
+        //     ),
+        //     Map.entry(
+        //         "Attachments.csv",
+        //         new StateFileInfo<>(
+        //             Attachment.class,
+        //             Map.ofEntries(
+        //                 Map.entry("id_post", "idPost"),
+        //                 Map.entry("filename", "filename")
+        //             )
+        //         )
+        //     )
+        // );
     }
 
     @GetMapping("/state")
@@ -61,6 +145,17 @@ public class StateController {
             Map.entry("filenames", filenames)
         ));
         return "state";
+    }
+
+    @GetMapping("/state/reset")
+    public String resetState() {
+        attachmentManager.setup(new ArrayList<>());
+        userManager.setup();
+        commentManager.setup(new ArrayList<>(), userManager);
+        authorManager.setup(new ArrayList<>());
+        postManager.setup(new ArrayList<>(), new ArrayList<>(), authorManager, attachmentManager, commentManager);
+
+        return "redirect:/";
     }
 
     @GetMapping("/state/download")
@@ -134,6 +229,25 @@ public class StateController {
             .body(zip);
     }
 
+    private <T> List<T> parseCSV(Class<T> beanClass, Map<String, String> mapping, MultipartFile file) throws CsvException {
+        try {
+            HeaderColumnNameTranslateMappingStrategy<T> strategy = new HeaderColumnNameTranslateMappingStrategy<>();
+            strategy.setType(beanClass);
+            strategy.setColumnMapping(mapping);
+            Reader reader = new InputStreamReader(file.getInputStream());
+            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
+                .withMappingStrategy(strategy)
+                .build();
+
+            List<T> beans = csvToBean.stream().collect(Collectors.toList());
+            reader.close();
+            return beans;
+
+        } catch (Exception e) {
+            throw new CsvException();
+        }
+    }
+
     @PostMapping("/state")
     public String setState(
         @Valid @ModelAttribute StateFiles stateFiles,
@@ -142,7 +256,93 @@ public class StateController {
     ) {
         if(!errors.hasErrors()) {
             List<MultipartFile> files = stateFiles.getFiles();
+
+            List<Attachment> attachments = new ArrayList<>();
+            List<Comment> comments = new ArrayList<>();
+            List<PostAuthor> postsAuthors = new ArrayList<>();
+            List<Author> authors = new ArrayList<>();
+            List<Post> posts = new ArrayList<>();
+
+            try {
+                for (MultipartFile file : files) {
+
+                    switch (file.getOriginalFilename()) {
+                        case "Posts.csv":
+                            posts = parseCSV(
+                                Post.class,
+                                Map.ofEntries(
+                                    Map.entry("id", "idCSV"),
+                                    Map.entry("post_content", "postContent"),
+                                    Map.entry("tags", "tags")
+                                ),
+                                file
+                            );
+                            break;
+
+                        case "Authors.csv":
+                            authors = parseCSV(
+                                Author.class,
+                                Map.ofEntries(
+                                    Map.entry("id", "idCSV"),
+                                    Map.entry("first_name", "firstName"),
+                                    Map.entry("last_name", "lastName"),
+                                    Map.entry("username", "username")
+                                ),
+                                file
+                            );
+                            break;
+
+                        case "Posts_Authors.csv":
+                            postsAuthors = parseCSV(
+                                PostAuthor.class,
+                                Map.ofEntries(
+                                    Map.entry("id_post", "idPost"),
+                                    Map.entry("id_author", "idAuthor")
+                                ),
+                                file
+                            );
+                            break;
+
+                        case "Comments.csv":
+                            comments = parseCSV(
+                                Comment.class,
+                                Map.ofEntries(
+                                    Map.entry("id", "idCSV"),
+                                    Map.entry("username", "username"),
+                                    Map.entry("id_post", "idPost"),
+                                    Map.entry("comment_content", "commentContent")
+                                ),
+                                file
+                            );
+                            break;
+
+                        case "Attachments.csv":
+                            attachments = parseCSV(
+                                Attachment.class,
+                                Map.ofEntries(
+                                    Map.entry("id_post", "idPost"),
+                                    Map.entry("filename", "filename")
+                                ),
+                                file
+                            );
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+
+            } catch(CsvException e) {
+                throw new StateImportException();
+            }
+
+            attachmentManager.setup(attachments);
+            userManager.setup();
+            commentManager.setup(comments, userManager);
+            authorManager.setup(authors);
+            postManager.setup(posts, postsAuthors, authorManager, attachmentManager, commentManager);
         }
+
         if(errors.hasErrors()) {
             model.addAttribute("filenames", filenames);
             return "state";
