@@ -8,20 +8,28 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import net.pauljackals.springblog.controller.exceptions.StateExportException;
 import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
+import net.pauljackals.springblog.domain.helpers.StateFiles;
 import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.PostManager;
 
@@ -29,6 +37,7 @@ import net.pauljackals.springblog.service.PostManager;
 public class StateController {
     private AuthorManager authorManager;
     private PostManager postManager;
+    private String[] filenames;
 
     public StateController(
         @Autowired AuthorManager authorManager,
@@ -36,10 +45,21 @@ public class StateController {
     ) {
         this.authorManager = authorManager;
         this.postManager = postManager;
+        filenames = new String[] {
+            "Posts.csv",
+            "Authors.csv",
+            "Posts_Authors.csv",
+            "Comments.csv",
+            "Attachments.csv"
+        };
     }
 
     @GetMapping("/state")
-    public String getState() {
+    public String getState(Model model) {
+        model.addAllAttributes(Map.ofEntries(
+            Map.entry("stateFiles", new StateFiles()),
+            Map.entry("filenames", filenames)
+        ));
         return "state";
     }
 
@@ -86,13 +106,7 @@ public class StateController {
             commentsCSVBuilder.toString(),
             attachmentsCSVBuilder.toString()
         };
-        String[] filenames = new String[] {
-            "Posts.csv",
-            "Authors.csv",
-            "Posts_Authors.csv",
-            "Comments.csv",
-            "Attachments.csv"
-        };
+
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteOutputStream);
         Resource zip;
@@ -118,5 +132,22 @@ public class StateController {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"state.zip\"")
             .header(HttpHeaders.CONTENT_TYPE, "application/zip")
             .body(zip);
+    }
+
+    @PostMapping("/state")
+    public String setState(
+        @Valid @ModelAttribute StateFiles stateFiles,
+        Errors errors,
+        Model model
+    ) {
+        if(!errors.hasErrors()) {
+            List<MultipartFile> files = stateFiles.getFiles();
+        }
+        if(errors.hasErrors()) {
+            model.addAttribute("filenames", filenames);
+            return "state";
+        }
+
+        return "redirect:/";
     }
 }

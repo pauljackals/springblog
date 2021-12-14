@@ -13,5 +13,16 @@
         <h3>server state export</h3>
         <a th:href="@{/state/download}"><button>download</button></a>
     </div>
+    
+    <div class="state">
+        <h3>server state import</h3>
+        <span th:text="${#strings.arrayJoin(filenames, ', ')}"></span>
+        <form action="#" method="post" th:action="@{/state}" enctype="multipart/form-data" th:object="${stateFiles}">
+            <span class="error-message center" th:if="${#fields.hasErrors('files')}" th:errors="*{files}"></span>
+            <input type="file" id="files" name="files" multiple>
+
+            <input type="submit" value="upload">
+        </form>
+    </div>
 </body>
 </html>
