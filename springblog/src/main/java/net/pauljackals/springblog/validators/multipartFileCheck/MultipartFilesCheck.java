@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = MultipartFileCheckValidator.class)
-public @interface MultipartFileCheck {
-    String message() default "file is not valid";
+@Constraint(validatedBy = MultipartFilesCheckValidator.class)
+public @interface MultipartFilesCheck {
+    String message() default "files are not valid";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

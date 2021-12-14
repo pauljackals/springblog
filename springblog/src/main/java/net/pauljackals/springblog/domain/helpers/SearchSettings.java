@@ -31,4 +31,8 @@ public class SearchSettings {
     
     @Pattern(regexp = "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$", message = "wrong id format")
     String id;
+    
+    @Size(max = 32, message = "usernames are not longer than 32 characters")
+    @Pattern(regexp = "^|\\w+$", message = "usernames contain only letters and numbers")
+    private String username;
 }

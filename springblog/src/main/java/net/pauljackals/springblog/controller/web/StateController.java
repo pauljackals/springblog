@@ -40,7 +40,6 @@ import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.PostAuthor;
-// import net.pauljackals.springblog.domain.helpers.StateFileInfo;
 import net.pauljackals.springblog.domain.helpers.StateFiles;
 import net.pauljackals.springblog.service.AttachmentManager;
 import net.pauljackals.springblog.service.AuthorManager;
@@ -57,7 +56,6 @@ public class StateController {
     private AttachmentManager attachmentManager;
 
     private String[] filenames;
-    // private Map<String, StateFileInfo<?>> filenamesMap;
 
     public StateController(
         @Autowired AuthorManager authorManager,
@@ -79,63 +77,6 @@ public class StateController {
             "Comments.csv",
             "Attachments.csv"
         };
-        // filenamesMap = Map.ofEntries(
-        //     Map.entry(
-        //         "Posts.csv",
-        //         new StateFileInfo<>(
-        //             Post.class,
-        //             Map.ofEntries(
-        //                 Map.entry("id", "idCSV"),
-        //                 Map.entry("post_content", "postContent"),
-        //                 Map.entry("tags", "tags")
-        //             )
-        //         )
-        //     ),
-        //     Map.entry(
-        //         "Authors.csv",
-        //         new StateFileInfo<>(
-        //             Author.class,
-        //             Map.ofEntries(
-        //                 Map.entry("id", "idCSV"),
-        //                 Map.entry("first_name", "firstName"),
-        //                 Map.entry("last_name", "lastName"),
-        //                 Map.entry("username", "username")
-        //             )
-        //         )
-        //     ),
-        //     Map.entry(
-        //         "Posts_Authors.csv",
-        //         new StateFileInfo<>(
-        //             PostAuthor.class,
-        //             Map.ofEntries(
-        //                 Map.entry("id_post", "idPost"),
-        //                 Map.entry("id_author", "idAuthor")
-        //             )
-        //         )
-        //     ),
-        //     Map.entry(
-        //         "Comments.csv",
-        //         new StateFileInfo<>(
-        //             Comment.class,
-        //             Map.ofEntries(
-        //                 Map.entry("id", "idCSV"),
-        //                 Map.entry("username", "username"),
-        //                 Map.entry("id_post", "idPost"),
-        //                 Map.entry("comment_content", "commentContent")
-        //             )
-        //         )
-        //     ),
-        //     Map.entry(
-        //         "Attachments.csv",
-        //         new StateFileInfo<>(
-        //             Attachment.class,
-        //             Map.ofEntries(
-        //                 Map.entry("id_post", "idPost"),
-        //                 Map.entry("filename", "filename")
-        //             )
-        //         )
-        //     )
-        // );
     }
 
     @GetMapping("/state")

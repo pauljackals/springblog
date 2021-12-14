@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import net.pauljackals.springblog.controller.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Post;
-import net.pauljackals.springblog.domain.helpers.UsernameFilter;
+import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.PostManager;
 
@@ -35,12 +35,12 @@ public class AuthorController {
 
     @GetMapping("/author")
     public String getUsers(
-        @Valid @ModelAttribute UsernameFilter usernameFilter,
+        @Valid @ModelAttribute SearchSettings searchSettings,
         Errors errors,
         Model model
     ) {
         model.addAllAttributes(Map.ofEntries(
-            Map.entry("usernameFilter", usernameFilter),
+            Map.entry("searchSettings", searchSettings),
             Map.entry("title", "Authors"),
             Map.entry("userURL", "/author")
         ));
@@ -51,7 +51,7 @@ public class AuthorController {
             return "users";
         }
 
-        String username = usernameFilter.getUsername();
+        String username = searchSettings.getUsername();
         List<Author> authors = authorManager.getAuthors(username);
         model.addAttribute("users", authors);
 

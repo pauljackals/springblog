@@ -12,7 +12,7 @@
     <h2 th:text="${title}" class="users-title"></h2>
     <div class="search">
         <h3>filter settings</h3>
-        <form action="#" method="get" th:action="@{${userURL}}" th:object="${usernameFilter}">
+        <form action="#" method="get" th:action="@{${userURL}}" th:object="${searchSettings}">
             <span class="error-message center" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
             <input type="text" name="username" placeholder="username" th:field="*{username}">
             

@@ -8,9 +8,9 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.web.multipart.MultipartFile;
  
-public class MultipartFileCheckValidator implements ConstraintValidator<MultipartFileCheck, List<MultipartFile>> {
+public class MultipartFilesCheckValidator implements ConstraintValidator<MultipartFilesCheck, List<MultipartFile>> {
 
-    public void initialize(MultipartFileCheck constraint) {
+    public void initialize(MultipartFilesCheck constraint) {
     }
  
     @Override
