@@ -55,8 +55,10 @@ public class CSVToXML {
         List<Path> paths = pathsStream.collect(Collectors.toList());
         pathsStream.close();
 
-        Map<String, String> xmlFiles = new HashMap<>();
-
+        StringBuilder xmlFile = new StringBuilder();
+        xmlFile.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        xmlFile.append("<beans xmlns=\"http://www.springframework.org/schema/beans\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd\">\n");
+        
         for (Path path : paths) {
             String fileName = path.getFileName().toString().replace(".csv", "");
             String className = parseClassNameFromFile(fileName);
@@ -73,9 +75,6 @@ public class CSVToXML {
                 headersCamelCase[i] = header;
             }
 
-            StringBuilder xmlFile = new StringBuilder();
-            xmlFile.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            xmlFile.append("<beans xmlns=\"http://www.springframework.org/schema/beans\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd\">\n");
             for (int i = 1; i < lines.size(); i++) {
                 String[] line = lines.get(i);
                 xmlFile.append(String.format("\t<bean id=\"%s%d\" class=\"%s.%s\">\n", className, i-1, beansPackage, className));
@@ -88,15 +87,12 @@ public class CSVToXML {
                 }
                 xmlFile.append("\t</bean>\n");
             }
-            xmlFile.append("</beans>\n");
-
-            xmlFiles.put(fileName, xmlFile.toString());
         }
 
-        for(Map.Entry<String, String> entry : xmlFiles.entrySet()) {
-            BufferedWriter writer = Files.newBufferedWriter(Paths.get(rootPath, String.format("%s.xml", entry.getKey())));
-            writer.write(entry.getValue());
-            writer.close();
-        }
+        xmlFile.append("</beans>\n");
+
+        BufferedWriter writer = Files.newBufferedWriter(Paths.get(rootPath, "beans.xml"));
+        writer.write(xmlFile.toString());
+        writer.close();
     }
 }
