@@ -1,4 +1,4 @@
-package net.pauljackals.springblog.controller.exceptions;
+package net.pauljackals.springblog.exceptions;
 
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;

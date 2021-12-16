@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import net.pauljackals.springblog.controller.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.domain.User;
 import net.pauljackals.springblog.domain.helpers.PostsWithComments;
 import net.pauljackals.springblog.domain.helpers.SearchSettings;
+import net.pauljackals.springblog.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.service.PostManager;
 import net.pauljackals.springblog.service.UserManager;
 

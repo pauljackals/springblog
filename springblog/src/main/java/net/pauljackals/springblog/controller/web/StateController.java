@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -33,14 +32,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.pauljackals.springblog.controller.exceptions.StateExportException;
-import net.pauljackals.springblog.controller.exceptions.StateImportException;
 import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.PostAuthor;
 import net.pauljackals.springblog.domain.helpers.StateFiles;
+import net.pauljackals.springblog.exceptions.StateExportException;
+import net.pauljackals.springblog.exceptions.StateImportException;
 import net.pauljackals.springblog.service.AttachmentManager;
 import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.CommentManager;
@@ -170,23 +169,25 @@ public class StateController {
             .body(zip);
     }
 
-    private <T> List<T> parseCSV(Class<T> beanClass, Map<String, String> mapping, MultipartFile file) throws CsvException {
-        try {
-            HeaderColumnNameTranslateMappingStrategy<T> strategy = new HeaderColumnNameTranslateMappingStrategy<>();
-            strategy.setType(beanClass);
-            strategy.setColumnMapping(mapping);
-            Reader reader = new InputStreamReader(file.getInputStream());
-            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
-                .withMappingStrategy(strategy)
-                .build();
+    private <T> List<T> parseCSV(Class<T> beanClass, Map<String, String> mapping, MultipartFile file) throws IOException, CsvException {
+        HeaderColumnNameTranslateMappingStrategy<T> strategy = new HeaderColumnNameTranslateMappingStrategy<>();
+        strategy.setType(beanClass);
+        strategy.setColumnMapping(mapping);
 
-            List<T> beans = csvToBean.stream().collect(Collectors.toList());
-            reader.close();
-            return beans;
+        Reader reader = new InputStreamReader(file.getInputStream());
+        CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
+            .withMappingStrategy(strategy)
+            .withThrowExceptions(false)
+            .build();
+            
+        List<T> beans = csvToBean.parse();
+        reader.close();
 
-        } catch (Exception e) {
+        if(csvToBean.getCapturedExceptions().size()>0) {
             throw new CsvException();
         }
+
+        return beans;
     }
 
     @PostMapping("/state")
@@ -273,7 +274,7 @@ public class StateController {
                     }
                 }
 
-            } catch(CsvException e) {
+            } catch(CsvException|IOException e) {
                 throw new StateImportException();
             }
 
