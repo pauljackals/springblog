@@ -21,7 +21,7 @@ public class Post {
     @Size(max = 1024, message = "post must be no longer than 1024 characters")
     private String postContent;
 
-    @Pattern(regexp = "^\\S{1,32}( \\S{1,32}){0,15}$", message = "there must be no more than 16 tags, each no longer than 32 characters")
+    @Pattern(regexp = "^\\S{1,32}( \\S{1,32}){0,15}$", message = "there must be between 1 and 16 tags, each no longer than 32 characters")
     @Duplicates
     private String tags;
 
