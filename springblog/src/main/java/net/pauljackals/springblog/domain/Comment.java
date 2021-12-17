@@ -18,7 +18,7 @@ public class Comment {
     private String username;
 
     @NotEmpty(message = "comment must not be empty")
-    @Size(max = 512, message = "comment must be no longer than 512 characters")
+    @Size(max = 512, message = "comment must be no longer than {max} characters")
     private String commentContent;
     
     private User user;

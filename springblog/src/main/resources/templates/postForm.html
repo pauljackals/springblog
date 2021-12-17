@@ -19,7 +19,7 @@
                     <button>X</button>
                 </a>
             </div>
-            <form action="#" th:action="@{${'/post' + (isEdited ? '/'+post.id+'/edit' : '')}}" method="post" th:object="${post}">
+            <form action="#" th:action="@{${'/post' + (isEdited ? '/'+post.id+'/edit' : '')}}" method="post" th:object="${post}" enctype="multipart/form-data">
                 <th:block th:object="${postExtras}">
                     <span class="error-message" th:if="${#fields.hasErrors('authorsString')}" th:errors="*{authorsString}"></span>
                     <input class="input-wider" type="text" th:field="*{authorsString}" placeholder="author1 author2...">
@@ -27,6 +27,14 @@
 
                 <span class="error-message" th:if="${#fields.hasErrors('postContent')}" th:errors="*{postContent}"></span>
                 <textarea th:field="*{postContent}" placeholder="content"></textarea>
+
+                <th:block th:object="${postExtras}">
+                    <!-- <span class="error-message" th:if="${#fields.hasErrors('attachmentsUploaded')}" th:errors="*{attachmentsUploaded}"></span>
+                    <input type="checkbox" th:each="attachment,status : *{attachmentsUploaded}" th:checked="${attachment}" name="attachmentsUploaded" th:id="${'attachmentsUploaded'+(status.index+1)}"> -->
+
+                    <span class="error-message" th:if="${#fields.hasErrors('attachmentsFiles')}" th:errors="*{attachmentsFiles}"></span>
+                    <input type="file" id="attachmentsFiles" name="attachmentsFiles" multiple>
+                </th:block>
 
                 <span class="error-message" th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></span>
                 <input class="input-wider" type="text" th:field="*{tags}" placeholder="tag1 tag2...">

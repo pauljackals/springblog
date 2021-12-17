@@ -20,5 +20,5 @@ public class StateFiles {
         "Comments.csv",
         "Attachments.csv"
     })
-    private List< MultipartFile> files;
+    private List<MultipartFile> files;
 }

@@ -18,7 +18,7 @@ public class Post {
     private String id;
 
     @NotEmpty(message = "post must not be empty")
-    @Size(max = 1024, message = "post must be no longer than 1024 characters")
+    @Size(max = 1024, message = "post must be no longer than {max} characters")
     private String postContent;
 
     @Pattern(regexp = "^\\S{1,32}( \\S{1,32}){0,15}$", message = "there must be between 1 and 16 tags, each no longer than 32 characters")
@@ -30,11 +30,12 @@ public class Post {
     private List<Comment> comments = Collections.synchronizedList(new ArrayList<>());
     private int idCSV = -1;
 
-    public Post(String id, String postContent, String tags, List<Author> authors) {
+    public Post(String id, String postContent, String tags, List<Author> authors, List<Attachment> attachments) {
         this.id = id;
         this.postContent = postContent;
         this.tags = tags;
         this.authors.addAll(authors);
+        this.attachments.addAll(attachments);
     }
 
     public Post(int idCSV, String postContent, String tags) {
@@ -57,6 +58,14 @@ public class Post {
 
     public void addAttachment(Attachment attachment) {
         attachments.add(attachment);
+    }
+    public void addAttachments(List<Attachment> attachments) {
+        this.attachments.addAll(attachments);
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments.clear();
+        addAttachments(attachments);
     }
 
     public void addComment(Comment comment) {

@@ -21,14 +21,20 @@ public class MultipartFilesCheckValidator implements ConstraintValidator<Multipa
         }
         String message = null;
         List<String> empty = new ArrayList<>();
+        List<String> tooLong = new ArrayList<>();
         for (MultipartFile file : files) {
-            if(file.getSize()==0) {
-                empty.add(file.getOriginalFilename());
+            String name = file.getOriginalFilename();
+            if(name.length()>128) {
+                tooLong.add(name);
+            } else if(file.isEmpty()) {
+                empty.add(name);
             }
         }
-        if(empty.size()>0) {
-            message = String.join(", ", empty) + " empty";
+        if(tooLong.size()>0) {
+            message = "some files have names longer than 128 characters";
 
+        } else if(empty.size()>0) {
+            message = "empty: " + String.join(", ", empty);
         }
         if(message!=null) {
             constraintValidatorContext.disableDefaultConstraintViolation();

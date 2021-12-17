@@ -16,7 +16,9 @@ import net.pauljackals.springblog.domain.Attachment;
 public class AttachmentManager {
     private List<Attachment> attachments;
     
-    public AttachmentManager(@Autowired List<Attachment> attachments) {
+    public AttachmentManager(
+        @Autowired List<Attachment> attachments
+    ) {
         setup(attachments);
     }
     
@@ -43,6 +45,14 @@ public class AttachmentManager {
     }
     public Attachment addAttachment(Attachment attachment) {
         return addAttachment(attachment, false);
+    }
+
+    public List<Attachment> addAttachments(List<Attachment> attachments) {
+        List<Attachment> attachmentsNew = new ArrayList<>();
+        for (Attachment attachment : attachments) {
+            attachmentsNew.add(addAttachment(attachment));
+        }
+        return attachmentsNew;
     }
 
     public Attachment removeAttachment(Attachment attachment) {

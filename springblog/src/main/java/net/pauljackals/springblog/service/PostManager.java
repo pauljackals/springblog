@@ -34,21 +34,18 @@ public class PostManager {
         @Autowired AttachmentManager attachmentManager,
         @Autowired CommentManager commentManager
     ) {
-        setup(posts, postsAuthors, authorManager, attachmentManager, commentManager);
+        this.commentManager = commentManager;
+        this.attachmentManager = attachmentManager;
+        setup(posts, postsAuthors, authorManager.getAuthors());
     }
 
     public void setup(
         List<Post> posts,
         List<PostAuthor> postsAuthors,
-        AuthorManager authorManager,
-        AttachmentManager attachmentManager,
-        CommentManager commentManager
+        List<Author> authors
     ) {
         this.posts = Collections.synchronizedList(new ArrayList<>());
-        this.commentManager = commentManager;
-        this.attachmentManager = attachmentManager;
 
-        List<Author> authors = authorManager.getAuthors();
         List<Attachment> attachments = attachmentManager.getAttachments();
         List<Comment> comments = commentManager.getComments();
 
@@ -199,7 +196,8 @@ public class PostManager {
                 UUID.randomUUID().toString(),
                 post.getPostContent(),
                 post.getTags(),
-                post.getAuthors()
+                post.getAuthors(),
+                post.getAttachments()
             );
         } else {
             post.setId(UUID.randomUUID().toString());

@@ -22,12 +22,12 @@ public class CommentManager {
         @Autowired List<Comment> comments,
         @Autowired UserManager userManager
     ) {
-        setup(comments, userManager);
+        this.userManager = userManager;
+        setup(comments);
     }
     
-    public void setup(List<Comment> comments, UserManager userManager) {
+    public void setup(List<Comment> comments) {
         this.comments = Collections.synchronizedList(new ArrayList<>());
-        this.userManager = userManager;
         for (Comment comment : comments) {
             addComment(comment, true);
         }

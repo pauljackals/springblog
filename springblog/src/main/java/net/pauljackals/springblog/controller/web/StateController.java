@@ -91,9 +91,11 @@ public class StateController {
     public String resetState() {
         attachmentManager.setup(new ArrayList<>());
         userManager.setup();
-        commentManager.setup(new ArrayList<>(), userManager);
+        commentManager.setup(new ArrayList<>());
         authorManager.setup(new ArrayList<>());
-        postManager.setup(new ArrayList<>(), new ArrayList<>(), authorManager, attachmentManager, commentManager);
+        postManager.setup(new ArrayList<>(), new ArrayList<>(), authorManager.getAuthors());
+
+        authorManager.addAuthor(new Author("", "John", "Doe", "johndoe1"));
 
         return "redirect:/";
     }
@@ -280,9 +282,9 @@ public class StateController {
 
             attachmentManager.setup(attachments);
             userManager.setup();
-            commentManager.setup(comments, userManager);
+            commentManager.setup(comments);
             authorManager.setup(authors);
-            postManager.setup(posts, postsAuthors, authorManager, attachmentManager, commentManager);
+            postManager.setup(posts, postsAuthors, authorManager.getAuthors());
         }
 
         if(errors.hasErrors()) {

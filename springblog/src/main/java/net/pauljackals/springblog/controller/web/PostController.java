@@ -14,27 +14,37 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
 
+import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.helpers.PostExtras;
 import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.exceptions.ResourceNotFoundException;
+import net.pauljackals.springblog.service.AttachmentManager;
 import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.PostManager;
+import net.pauljackals.springblog.service.storage.StorageService;
 
 @Controller
 public class PostController {
     private PostManager postManager;
     private AuthorManager authorManager;
+    private AttachmentManager attachmentManager;
+    private StorageService storageService;
 
     public PostController(
         @Autowired PostManager postManager,
-        @Autowired AuthorManager authorManager
+        @Autowired AuthorManager authorManager,
+        @Autowired AttachmentManager attachmentManager,
+        @Autowired StorageService storageService
     ) {
         this.postManager = postManager;
         this.authorManager = authorManager;
+        this.attachmentManager = attachmentManager;
+        this.storageService = storageService;
     }
 
     private List<Author> getAuthorsByUsernames(String usernamesRaw) {
@@ -60,6 +70,17 @@ public class PostController {
         if(usernamesMissing.size()>0) {
             errors.rejectValue(field, "AUTHORS_NOT_FOUND", String.format("authors do not exist: %s", String.join(", ", usernamesMissing)));
         }
+    }
+    public List<Attachment> createAttachments(List<MultipartFile> files) {
+        List<Attachment> attachments = new ArrayList<>();
+        if(files.size()>1 || files.size()==1 && files.get(0).getOriginalFilename().length()>0) {
+            for (MultipartFile file : files) {
+                Attachment attachment = new Attachment();
+                attachment.setFilename(file.getOriginalFilename());
+                attachments.add(attachment);
+            }
+        }
+        return attachments;
     }
 
     @GetMapping("/post")
@@ -88,8 +109,19 @@ public class PostController {
             return "postForm";
         }
 
+        List<MultipartFile> files = postExtras.getAttachmentsFiles();
+        List<Attachment> attachments = attachmentManager.addAttachments(createAttachments(files));
+
         post.addAuthors(authors);
+        post.addAttachments(attachments);
         Post postNew = postManager.addPost(post);
+
+        if(attachments.size()>0) {
+            String idPost = postNew.getId();
+            for(MultipartFile file : files) {
+                storageService.store(file, idPost);
+            }
+        }
 
         return String.format("redirect:/post/%s", postNew.getId());
     }
@@ -109,7 +141,11 @@ public class PostController {
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", post),
-            Map.entry("postExtras", new PostExtras(String.join(" ", authorsUsernames))),
+            Map.entry("postExtras", new PostExtras(
+                String.join(" ", authorsUsernames),
+                new ArrayList<>()
+                // new ArrayList<>()
+            )),
             Map.entry("isEdited", true)
         ));
         return "postForm";
