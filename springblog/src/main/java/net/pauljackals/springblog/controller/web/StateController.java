@@ -45,6 +45,7 @@ import net.pauljackals.springblog.service.AuthorManager;
 import net.pauljackals.springblog.service.CommentManager;
 import net.pauljackals.springblog.service.PostManager;
 import net.pauljackals.springblog.service.UserManager;
+import net.pauljackals.springblog.service.storage.StorageService;
 
 @Controller
 public class StateController {
@@ -53,6 +54,7 @@ public class StateController {
     private CommentManager commentManager;
     private UserManager userManager;
     private AttachmentManager attachmentManager;
+    private StorageService storageService;
 
     private String[] filenames;
 
@@ -61,13 +63,15 @@ public class StateController {
         @Autowired PostManager postManager,
         @Autowired CommentManager commentManager,
         @Autowired UserManager userManager,
-        @Autowired AttachmentManager attachmentManager
+        @Autowired AttachmentManager attachmentManager,
+        @Autowired StorageService storageService
     ) {
         this.authorManager = authorManager;
         this.postManager = postManager;
         this.commentManager = commentManager;
         this.userManager = userManager;
         this.attachmentManager = attachmentManager;
+        this.storageService = storageService;
 
         filenames = new String[] {
             "Posts.csv",
@@ -94,6 +98,9 @@ public class StateController {
         commentManager.setup(new ArrayList<>());
         authorManager.setup(new ArrayList<>());
         postManager.setup(new ArrayList<>(), new ArrayList<>(), authorManager.getAuthors());
+
+        storageService.deleteAll();
+        storageService.init();
 
         authorManager.addAuthor(new Author("", "John", "Doe", "johndoe1"));
 
