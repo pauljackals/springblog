@@ -1,21 +1,19 @@
 package net.pauljackals.springblog.domain.helpers;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.pauljackals.springblog.validators.duplicates.Duplicates;
-import net.pauljackals.springblog.validators.elements.Elements;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostExtras {
-    @Size(max = 263, message = "usernames must be no longer than 263 characters")
-    @Pattern(regexp = "^\\w+( \\w+)*$", message = "usernames must contain only letters and numbers")
-    @Elements(limit = 8)
+    @NotNull(message = "authors are required")
+    @Pattern(regexp = "^\\w{1,32}( \\w{1,32}){0,7}$", message = "there must be no more than 8 usernames, each not empty and not longer than 32 letters/numbers")
     @Duplicates
     private String authorsString;
 }

@@ -11,7 +11,6 @@ import javax.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.pauljackals.springblog.validators.duplicates.Duplicates;
-import net.pauljackals.springblog.validators.elements.Elements;
 
 @Data
 @NoArgsConstructor
@@ -19,12 +18,10 @@ public class Post {
     private String id;
 
     @NotEmpty(message = "post must not be empty")
-    @Size(max = 1024, message = "post must have no more than 1024 characters")
+    @Size(max = 1024, message = "post must be no longer than 1024 characters")
     private String postContent;
 
-    @Size(max = 32*8+7, message = "field must be no longer than 263 characters")
-    @Pattern(regexp = "^\\S+( \\S+)*$", message = "tags must not contain whitespace characters")
-    @Elements(limit = 8)
+    @Pattern(regexp = "^\\S{1,32}( \\S{1,32}){0,15}$", message = "there must be no more than 16 tags, each no longer than 32 characters")
     @Duplicates
     private String tags;
 
