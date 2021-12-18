@@ -28,12 +28,12 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public void store(MultipartFile file, String idPost) {
+	public void store(MultipartFile file, String idPost, String nameNew) {
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file.");
 			}
-			Path destinationFile = this.rootLocation.resolve(Paths.get(idPost + "_" + file.getOriginalFilename()))
+			Path destinationFile = this.rootLocation.resolve(Paths.get(idPost + "_" + (nameNew==null ? file.getOriginalFilename() : nameNew)))
 				.normalize().toAbsolutePath();
 			if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
 				throw new StorageException("Cannot store file outside current directory.");

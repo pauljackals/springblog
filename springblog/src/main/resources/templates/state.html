@@ -21,6 +21,10 @@
             <span class="error-message center" th:if="${#fields.hasErrors('files')}" th:errors="*{files}"></span>
             <input type="file" id="files" name="files" multiple>
 
+            <span class="error-message center" th:if="${#fields.hasErrors('upload')}" th:errors="*{upload}"></span>
+            <span>(optional) upload files</span>
+            <input type="file" id="upload" name="upload" multiple>
+
             <input type="submit" value="upload">
         </form>
     </div>

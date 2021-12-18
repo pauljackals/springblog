@@ -173,7 +173,7 @@ public class StateController {
                 zipOutputStream.closeEntry();
             }
             for (Resource attachmentFile : attachmentsFiles) {
-                ZipEntry zipEntry = new ZipEntry("upload/" + String.join("/", attachmentsFilenames.get(attachmentFile.getFilename()).split("_", 2)));
+                ZipEntry zipEntry = new ZipEntry("upload/" + attachmentsFilenames.get(attachmentFile.getFilename()));
                 zipOutputStream.putNextEntry(zipEntry);
                 zipOutputStream.write(attachmentFile.getInputStream().readAllBytes());
                 zipOutputStream.closeEntry();
@@ -221,6 +221,7 @@ public class StateController {
     ) {
         if(!errors.hasErrors()) {
             List<MultipartFile> files = stateFiles.getFiles();
+            List<MultipartFile> upload = stateFiles.getUpload();
 
             List<Attachment> attachments = new ArrayList<>();
             List<Comment> comments = new ArrayList<>();
@@ -309,6 +310,15 @@ public class StateController {
             commentManager.setup(comments);
             authorManager.setup(authors);
             postManager.setup(posts, postsAuthors, authorManager.getAuthors());
+
+            Map<Integer, String> postsIds = new HashMap<>();
+            for (Post post : posts) {
+                postsIds.put(post.getIdCSV(), post.getId());
+            }
+            for(MultipartFile file : upload) {
+                String[] filenameSplit = file.getOriginalFilename().split("_", 2);
+                storageService.store(file, postsIds.get(Integer.parseInt(filenameSplit[0])), filenameSplit[1]);
+            }
         }
 
         if(errors.hasErrors()) {

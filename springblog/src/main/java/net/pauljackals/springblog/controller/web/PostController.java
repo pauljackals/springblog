@@ -119,7 +119,7 @@ public class PostController {
         if(attachments.size()>0) {
             String idPost = postNew.getId();
             for(MultipartFile file : files) {
-                storageService.store(file, idPost);
+                storageService.store(file, idPost, null);
             }
         }
 

@@ -21,4 +21,7 @@ public class StateFiles {
         "Attachments.csv"
     })
     private List<MultipartFile> files;
+
+    @MultipartFilesCheck
+    private List<MultipartFile> upload;
 }
