@@ -287,6 +287,9 @@ public class StateController {
                 throw new StateImportException();
             }
 
+            storageService.deleteAll();
+            storageService.init();
+
             attachmentManager.setup(attachments);
             userManager.setup();
             commentManager.setup(comments);

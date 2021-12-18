@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +79,14 @@ public class FileSystemStorageService implements StorageService {
 		} catch (MalformedURLException e) {
 			throw new StorageFileNotFoundException("Could not read file: " + filename, e);
 		}
+	}
+
+	@Override
+	public List<Resource> loadAllAsResources() {
+		return loadAll().map(path -> {
+			String[] filenameSplit = path.getFileName().toString().split("_", 2);
+			return loadAsResource(filenameSplit[1], filenameSplit[0]);
+		}).collect(Collectors.toList());
 	}
 
 	@Override
