@@ -127,6 +127,7 @@ public class StateController {
             authorsIds.put(author.getId(), id);
         }
         int idComment = 1;
+        Map<String, String> attachmentsFilenames = new HashMap<>();
         for (int i = 0; i < posts.size(); i++) {
             Post post = posts.get(i);
             int id = i+1;
@@ -139,7 +140,12 @@ public class StateController {
                 idComment++;
             }
             for (Attachment attachment : post.getAttachments()) {
-                attachmentsCSVBuilder.append(String.format("%d,%s\n", id, attachment.getFilename()));
+                String attachmentFilename = attachment.getFilename();
+                attachmentsCSVBuilder.append(String.format("%d,%s\n", id, attachmentFilename));
+                attachmentsFilenames.put(
+                    post.getId() + "_" + attachmentFilename,
+                    id + "_" + attachmentFilename
+                );
             }
         }
 
@@ -150,6 +156,8 @@ public class StateController {
             commentsCSVBuilder.toString(),
             attachmentsCSVBuilder.toString()
         };
+
+        List<Resource> attachmentsFiles = storageService.loadAllAsResources();
 
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteOutputStream);
@@ -162,6 +170,12 @@ public class StateController {
                 ZipEntry zipEntry = new ZipEntry(filename);
                 zipOutputStream.putNextEntry(zipEntry);
                 zipOutputStream.write(fileContent.getBytes());
+                zipOutputStream.closeEntry();
+            }
+            for (Resource attachmentFile : attachmentsFiles) {
+                ZipEntry zipEntry = new ZipEntry("upload/" + String.join("/", attachmentsFilenames.get(attachmentFile.getFilename()).split("_", 2)));
+                zipOutputStream.putNextEntry(zipEntry);
+                zipOutputStream.write(attachmentFile.getInputStream().readAllBytes());
                 zipOutputStream.closeEntry();
             }
             zipOutputStream.close();
