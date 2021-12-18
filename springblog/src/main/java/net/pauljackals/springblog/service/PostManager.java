@@ -219,7 +219,7 @@ public class PostManager {
                 commentManager.removeComment(comment);
             }
             for(Attachment attachment : post.getAttachments()) {
-                attachmentManager.removeAttachment(attachment);
+                attachmentManager.removeAttachment(attachment, post.getId());
             }
         }
 

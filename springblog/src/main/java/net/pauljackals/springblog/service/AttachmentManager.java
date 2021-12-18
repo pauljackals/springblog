@@ -10,15 +10,19 @@ import org.springframework.stereotype.Service;
 
 import lombok.Getter;
 import net.pauljackals.springblog.domain.Attachment;
+import net.pauljackals.springblog.service.storage.StorageService;
 
 @Service
 @Getter
 public class AttachmentManager {
     private List<Attachment> attachments;
+    private StorageService storageService;
     
     public AttachmentManager(
-        @Autowired List<Attachment> attachments
+        @Autowired List<Attachment> attachments,
+        @Autowired StorageService storageService
     ) {
+        this.storageService = storageService;
         setup(attachments);
     }
     
@@ -55,7 +59,13 @@ public class AttachmentManager {
         return attachmentsNew;
     }
 
-    public Attachment removeAttachment(Attachment attachment) {
-        return attachments.remove(attachment) ? attachment : null;
+    public Attachment removeAttachment(Attachment attachment, String idPost) {
+        boolean result = attachments.remove(attachment);
+        if(result) {
+            storageService.delete(attachment.getFilename(), idPost);
+            return attachment;
+        } else {
+            return null;
+        }
     }
 }
