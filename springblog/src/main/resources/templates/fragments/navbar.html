@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-    <th:block th:fragment="fragment(link)">
+    <th:block>
         <nav class="navbar">
             <div>
                 <a th:if="${link!=null}" th:href="@{${link}}"><button>return</button></a>
