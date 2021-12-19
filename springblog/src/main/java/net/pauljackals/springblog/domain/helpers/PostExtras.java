@@ -23,6 +23,7 @@ public class PostExtras {
     @Duplicates
     private String authorsString;
 
+    @Size(max = 8)
     private List<String> attachmentsToDelete;
 
     @Size(max = 8, message = "there must be no more than {max} attachments")

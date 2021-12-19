@@ -2,20 +2,24 @@ package net.pauljackals.springblog.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class Author {
-    @NonNull private String id;
-    @NonNull private String firstName;
-    @NonNull private String lastName;
-    @NonNull private String username;
+    private String id;
+    private String firstName;
+    private String lastName;
+    private String username;
     private int idCSV = -1;
+    
+    public Author(String id, String firstName, String lastName, String username) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+    }
 
-    public Author(int idCSV, @NonNull String firstName, @NonNull String lastName, @NonNull String username) {
+    public Author(int idCSV, String firstName, String lastName, String username) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

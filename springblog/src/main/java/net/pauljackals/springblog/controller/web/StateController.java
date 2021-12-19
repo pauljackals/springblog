@@ -103,6 +103,8 @@ public class StateController {
         storageService.init();
 
         authorManager.addAuthor(new Author("", "John", "Doe", "johndoe1"));
+        authorManager.addAuthor(new Author("", "Mary", "Jane", "maryjane123"));
+        authorManager.addAuthor(new Author("", "Bob", "Johnson", "bobby55"));
 
         return "redirect:/";
     }
