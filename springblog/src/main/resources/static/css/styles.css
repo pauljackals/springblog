@@ -273,3 +273,11 @@ body {
 .form-post input[type="checkbox"]:not(:checked) + span {
     display: none;
 }
+
+.post img, .form-post img {
+    max-width: 400px;
+    max-height: 400px;
+    object-fit: contain;
+    display: block;
+    margin-bottom: 15px;
+}

@@ -23,8 +23,9 @@
         <p class="content" th:text="${post.postContent}"></p>
         <th:block th:switch="${posts==null}">
             <ul th:case="true">
-                <li th:each="attachment : ${post.attachments}">
-                    <a th:href="@{/attachment/{idPost}/{filename}(idPost=${post.id},filename=${attachment.filename})}" th:text="${attachment.filename}"></a>
+                <li th:each="attachment : ${post.attachments}" th:with="link=@{/attachment/{idPost}/{filename}(idPost=${post.id},filename=${attachment.filename})}">
+                    <a th:href="${link}" th:text="${attachment.filename}"></a>
+                    <img th:src="${link}" th:if="${attachment.filename.endsWith('.png') || attachment.filename.endsWith('.jpg') || attachment.filename.endsWith('.jpeg')}">
                 </li>
             </ul>
             <div th:case="*" class="post-inside-info">
