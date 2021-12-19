@@ -233,6 +233,7 @@ public class PostManager {
             post.setPostContent(postUpdated.getPostContent());
             post.setTags(postUpdated.getTags());
             post.setAuthors(postUpdated.getAuthors());
+            post.setAttachments(postUpdated.getAttachments());
         }
 
         return post;

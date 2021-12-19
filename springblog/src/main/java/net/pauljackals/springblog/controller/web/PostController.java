@@ -143,8 +143,8 @@ public class PostController {
             Map.entry("post", post),
             Map.entry("postExtras", new PostExtras(
                 String.join(" ", authorsUsernames),
+                new ArrayList<>(),
                 new ArrayList<>()
-                // new ArrayList<>()
             )),
             Map.entry("isEdited", true)
         ));
@@ -160,11 +160,13 @@ public class PostController {
         Errors errorsPostExtras,
         Model model
     ) {
-        if(postManager.getPost(id)==null) {
+        Post postOriginal = postManager.getPost(id);
+        if(postOriginal==null) {
             throw new ResourceNotFoundException();
         }
 
         String authorsString = postExtras.getAuthorsString();
+        List<String> attachmentsToDeleteIds = postExtras.getAttachmentsToDelete();
         List<Author> authors = getAuthorsByUsernames(authorsString);
         validateAuthors(authorsString, authors, errorsPostExtras, "authorsString");
 
@@ -173,7 +175,25 @@ public class PostController {
             return "postForm";
         }
 
-        post.addAuthors(authors);
+        if(attachmentsToDeleteIds!=null && attachmentsToDeleteIds.size()>0) {
+            List<Attachment> attachmentsToDelete = new ArrayList<>();
+            List<Attachment> attachmentsRemaining = new ArrayList<>();
+            for(Attachment attachment : postOriginal.getAttachments()) {
+                if(attachmentsToDeleteIds.contains(attachment.getId())) {
+                    attachmentsToDelete.add(attachment);
+                } else {
+                    attachmentsRemaining.add(attachment);
+                }
+            }
+            post.setAttachments(attachmentsRemaining);
+            for(Attachment attachment : attachmentsToDelete) {
+                attachmentManager.removeAttachment(attachment, id);
+            }
+        } else {
+            post.setAttachments(postOriginal.getAttachments());
+        }
+
+        post.setAuthors(authors);
         Post postUpdated = postManager.updatePost(id, post);
 
         return String.format("redirect:/post/%s", postUpdated.getId());

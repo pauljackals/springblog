@@ -113,7 +113,7 @@ body {
 }
 .form-comment input,
 .form-comment-edit input,
-.form-post input {
+.form-post input:not([type="checkbox"]) {
     display: block;
 }
 .form-comment textarea,
@@ -269,4 +269,7 @@ body {
 
 .post-back-button {
     margin-bottom: 30px;
+}
+.form-post input[type="checkbox"]:not(:checked) + span {
+    display: none;
 }
