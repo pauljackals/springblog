@@ -15,7 +15,8 @@ public class MultipartFilesCheckValidator implements ConstraintValidator<Multipa
  
     @Override
     public boolean isValid(List<MultipartFile> files, ConstraintValidatorContext constraintValidatorContext) {
-        if(files==null || files.size()==0 || files.size()==1 && files.get(0).getOriginalFilename().length()==0) {
+        int filesSize = files.size();
+        if(filesSize==0 || filesSize==1 && files.get(0).getOriginalFilename().length()==0) {
             return true;
         }
         String message = null;

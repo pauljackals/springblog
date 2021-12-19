@@ -71,7 +71,7 @@ public class PostController {
             errors.rejectValue(field, "AUTHORS_NOT_FOUND", String.format("authors do not exist: %s", String.join(", ", usernamesMissing)));
         }
     }
-    public List<Attachment> createAttachments(List<MultipartFile> files) {
+    private List<Attachment> createAttachments(List<MultipartFile> files) {
         List<Attachment> attachments = new ArrayList<>();
         if(files.size()>1 || files.size()==1 && files.get(0).getOriginalFilename().length()>0) {
             for (MultipartFile file : files) {
@@ -81,6 +81,35 @@ public class PostController {
             }
         }
         return attachments;
+    }
+    private void validateAttachments(List<Attachment> original, List<Attachment> toAdd, List<String> toDeleteIds, Errors errors, String field) {
+        if(errors.hasFieldErrors(field)) {
+            return;
+        }
+        List<Attachment> current = new ArrayList<>();
+        if(toDeleteIds!=null && toDeleteIds.size()>0) {
+            for(Attachment attachmentOriginal : original) {
+                if(!toDeleteIds.contains(attachmentOriginal.getId())) {
+                    current.add(attachmentOriginal);
+                }
+            }
+        } else {
+            current.addAll(original);
+        }
+        List<String> duplicates = new ArrayList<>();
+        for(Attachment attachment : toAdd) {
+            String filename = attachment.getFilename();
+            if(current.stream().anyMatch(attachmentCurrent -> attachmentCurrent.getFilename().equals(filename))) {
+                duplicates.add(filename);
+            } else {
+                current.add(attachment);
+            }
+        }
+        if(duplicates.size()>0) {
+            errors.rejectValue(field, "ATTACHMENTS_DUPLICATES", String.format("already present: %s", String.join(", ", duplicates)));
+        } else if(current.size()>8) {
+            errors.rejectValue(field, "ATTACHMENTS_TOO_MANY", "there must be no more than 8 attachments");
+        }
     }
 
     @GetMapping("/post")
@@ -166,11 +195,19 @@ public class PostController {
         }
 
         String authorsString = postExtras.getAuthorsString();
+
+        List<Attachment> attachmentsOriginal = postOriginal.getAttachments();
+        List<MultipartFile> files = postExtras.getAttachmentsFiles();
+        List<Attachment> attachmentsToAdd = attachmentManager.addAttachments(createAttachments(files));
+        List<Attachment> attachmentsUpdated = new ArrayList<>();
         List<String> attachmentsToDeleteIds = postExtras.getAttachmentsToDelete();
+        validateAttachments(attachmentsOriginal, attachmentsToAdd, attachmentsToDeleteIds, errorsPostExtras, "attachmentsFiles");
+
         List<Author> authors = getAuthorsByUsernames(authorsString);
         validateAuthors(authorsString, authors, errorsPostExtras, "authorsString");
 
         if(errorsPost.hasErrors() || errorsPostExtras.hasErrors()) {
+            post.setAttachments(attachmentsOriginal);
             model.addAttribute("isEdited", true);
             return "postForm";
         }
@@ -178,23 +215,33 @@ public class PostController {
         if(attachmentsToDeleteIds!=null && attachmentsToDeleteIds.size()>0) {
             List<Attachment> attachmentsToDelete = new ArrayList<>();
             List<Attachment> attachmentsRemaining = new ArrayList<>();
-            for(Attachment attachment : postOriginal.getAttachments()) {
+            for(Attachment attachment : attachmentsOriginal) {
                 if(attachmentsToDeleteIds.contains(attachment.getId())) {
                     attachmentsToDelete.add(attachment);
                 } else {
                     attachmentsRemaining.add(attachment);
                 }
             }
-            post.setAttachments(attachmentsRemaining);
+            attachmentsUpdated.addAll(attachmentsRemaining);
             for(Attachment attachment : attachmentsToDelete) {
                 attachmentManager.removeAttachment(attachment, id);
             }
         } else {
-            post.setAttachments(postOriginal.getAttachments());
+            attachmentsUpdated.addAll(attachmentsOriginal);
         }
+        attachmentsUpdated.addAll(attachmentsToAdd);
+
+        post.setAttachments(attachmentsUpdated);
 
         post.setAuthors(authors);
         Post postUpdated = postManager.updatePost(id, post);
+
+        if(attachmentsToAdd.size()>0) {
+            String idPost = postUpdated.getId();
+            for(MultipartFile file : files) {
+                storageService.store(file, idPost, null);
+            }
+        }
 
         return String.format("redirect:/post/%s", postUpdated.getId());
     }
