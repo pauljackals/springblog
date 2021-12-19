@@ -311,13 +311,15 @@ public class StateController {
             authorManager.setup(authors);
             postManager.setup(posts, postsAuthors, authorManager.getAuthors());
 
-            Map<Integer, String> postsIds = new HashMap<>();
-            for (Post post : posts) {
-                postsIds.put(post.getIdCSV(), post.getId());
-            }
-            for(MultipartFile file : upload) {
-                String[] filenameSplit = file.getOriginalFilename().split("_", 2);
-                storageService.store(file, postsIds.get(Integer.parseInt(filenameSplit[0])), filenameSplit[1]);
+            if(upload.size()>1 || upload.size()==1 && upload.get(0).getOriginalFilename().length()>0) {
+                Map<Integer, String> postsIds = new HashMap<>();
+                for (Post post : posts) {
+                    postsIds.put(post.getIdCSV(), post.getId());
+                }
+                for(MultipartFile file : upload) {
+                    String[] filenameSplit = file.getOriginalFilename().split("_", 2);
+                    storageService.store(file, postsIds.get(Integer.parseInt(filenameSplit[0])), filenameSplit[1]);
+                }
             }
         }
 
