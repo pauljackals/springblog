@@ -1,0 +1,8 @@
+services:
+  runner:
+    image: gitlab/gitlab-runner
+    restart: always
+    volumes:
+      - config:/etc/gitlab-runner
+volumes:
+  config:
