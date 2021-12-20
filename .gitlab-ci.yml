@@ -80,6 +80,6 @@ deploy:
     - chmod 644 ~/.ssh/known_hosts
     - cd ./springblog
     - gradle bootJar
-    - ssh $DEPLOY_USER@$DEPLOY_HOST "pkill -f 'java -jar springblog-0.0.1-SNAPSHOT.jar'"
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "pkill -f 'java -jar springblog-0.0.1-SNAPSHOT.jar' || true"
     - scp ./build/libs/springblog-0.0.1-SNAPSHOT.jar $DEPLOY_USER@$DEPLOY_HOST:~
     - ssh $DEPLOY_USER@$DEPLOY_HOST "nohup java -jar springblog-0.0.1-SNAPSHOT.jar &"
