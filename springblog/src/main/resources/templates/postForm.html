@@ -31,7 +31,7 @@
                 <ul th:if="${isEdited}">
                     <li th:each="attachment,status : *{attachments}" th:with="link=@{/attachment/{idPost}/{filename}(idPost=*{id},filename=${attachment.filename})}">
                         <a th:href="${link}" th:text="${attachment.filename}"></a>
-                        <input type="checkbox" th:name="${'attachmentsToDelete'}" th:id="${'attachmentsToDelete'+ (status.index+1)}" th:value="${attachment.id}" th:checked="${#arrays.contains(postExtras.attachmentsToDelete, attachment.id)}">
+                        <input type="checkbox" th:name="${'attachmentsToDelete'}" th:id="${'attachmentsToDelete'+ (status.index+1)}" th:value="${attachment.id}" th:checked="${postExtras.attachmentsToDelete!=null && #arrays.contains(postExtras.attachmentsToDelete, attachment.id)}">
                         <span>to delete</span>
                         <img th:src="${link}" th:if="${attachment.filename.endsWith('.png') || attachment.filename.endsWith('.jpg') || attachment.filename.endsWith('.jpeg')}">
                     </li>
