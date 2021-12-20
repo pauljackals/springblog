@@ -20,53 +20,53 @@ variables:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-build_springblog:
-  stage: build
-  script:
-    - cd ./springblog
-    - gradle --build-cache assemble
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
+# build_springblog:
+#   stage: build
+#   script:
+#     - cd ./springblog
+#     - gradle --build-cache assemble
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: push
+#     paths:
+#       - build
+#       - .gradle
 
-test_springblog:
-  stage: test
-  script:
-    - cd ./springblog
-    - gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
+# test_springblog:
+#   stage: test
+#   script:
+#     - cd ./springblog
+#     - gradle check
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: pull
+#     paths:
+#       - build
+#       - .gradle
 
-build_converter:
-  stage: build
-  script:
-    - cd ./converterCSVToXML
-    - gradle --build-cache assemble
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
+# build_converter:
+#   stage: build
+#   script:
+#     - cd ./converterCSVToXML
+#     - gradle --build-cache assemble
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: push
+#     paths:
+#       - build
+#       - .gradle
 
-test_converter:
-  stage: test
-  script:
-    - cd ./converterCSVToXML
-    - gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
+# test_converter:
+#   stage: test
+#   script:
+#     - cd ./converterCSVToXML
+#     - gradle check
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: pull
+#     paths:
+#       - build
+#       - .gradle
 
 deploy:
   stage: deploy
@@ -80,4 +80,6 @@ deploy:
     - chmod 644 ~/.ssh/known_hosts
     - cd ./springblog
     - gradle bootJar
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "pkill -f 'java -jar springblog-0.0.1-SNAPSHOT.jar' ; mv nohup.out nohup.out.old"
     - scp ./build/libs/springblog-0.0.1-SNAPSHOT.jar $DEPLOY_USER@$DEPLOY_HOST:~
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "nohup java -jar springblog-0.0.1-SNAPSHOT.jar &"
