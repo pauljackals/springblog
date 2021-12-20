@@ -5,7 +5,7 @@ services:
     restart: always
     volumes:
       - config:/etc/gitlab-runner
-      - //var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
     environment:
       - REGISTRATION_TOKEN=${REGISTRATION_TOKEN}
       - CI_SERVER_URL=https://gitlab.com/
