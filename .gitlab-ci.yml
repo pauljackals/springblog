@@ -19,13 +19,6 @@ variables:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
-  - 'which ssh-agent || ( apk update && apk add openssh-client )'
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-  - chmod 644 ~/.ssh/known_hosts
 
 build_springblog:
   stage: build
@@ -78,6 +71,13 @@ test_converter:
 deploy:
   stage: deploy
   script:
+    - 'which ssh-agent || ( apk update && apk add openssh-client )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -q -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
     - cd ./springblog
-    - ./gradlew bootJar
+    - gradle bootJar
     - scp ./build/libs/springblog-0.0.1-SNAPSHOT.jar $DEPLOY_SERVER:~
