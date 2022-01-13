@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
 import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
@@ -19,24 +19,23 @@ import net.pauljackals.springblog.domain.helpers.PostAuthor;
 import net.pauljackals.springblog.domain.helpers.PostsWithComments;
 import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.domain.helpers.Sorting;
+import net.pauljackals.springblog.repository.PostRepository;
 
 @Service
-@Getter
+@Transactional
 public class PostManager {
-    private List<Post> posts;
+    private PostRepository postRepository;
     private CommentManager commentManager;
     private AttachmentManager attachmentManager;
     
     public PostManager(
-        @Autowired List<Post> posts,
-        @Autowired List<PostAuthor> postsAuthors,
-        @Autowired AuthorManager authorManager,
-        @Autowired AttachmentManager attachmentManager,
-        @Autowired CommentManager commentManager
+        PostRepository postRepository,
+        AttachmentManager attachmentManager,
+        CommentManager commentManager
     ) {
+        this.postRepository = postRepository;
         this.commentManager = commentManager;
         this.attachmentManager = attachmentManager;
-        setup(posts, postsAuthors, authorManager.getAuthors());
     }
 
     public void setup(
@@ -44,46 +43,54 @@ public class PostManager {
         List<PostAuthor> postsAuthors,
         List<Author> authors
     ) {
-        this.posts = Collections.synchronizedList(new ArrayList<>());
+        // this.posts = Collections.synchronizedList(new ArrayList<>());
 
-        List<Attachment> attachments = attachmentManager.getAttachments();
-        List<Comment> comments = commentManager.getComments();
+        // List<Attachment> attachments = attachmentManager.getAttachments();
+        // List<Comment> comments = commentManager.getComments();
 
-        for (Post post : posts) {
-            int idPost = post.getIdCSV();
-            List<Integer> postCurrentAuthorsIds = new ArrayList<>();
-            for (PostAuthor postAuthor : postsAuthors) {
-                if(idPost == postAuthor.getIdPost()) {
-                    postCurrentAuthorsIds.add(postAuthor.getIdAuthor());
-                }
-            }
-            if(postCurrentAuthorsIds.size() > 0) {
-                int counter = postCurrentAuthorsIds.size();
-                for (int i=0; i<authors.size(); i++) {
-                    Author author = authors.get(i);
-                    int idAuthor = author.getIdCSV();
-                    if(postCurrentAuthorsIds.contains(idAuthor)) {
-                        post.addAuthor(author);
-                        counter--;
-                    }
-                    if(counter == 0) {
-                        break;
-                    }
-                }
-            }
+        // for (Post post : posts) {
+        //     int idPost = post.getIdCSV();
+        //     List<Integer> postCurrentAuthorsIds = new ArrayList<>();
+        //     for (PostAuthor postAuthor : postsAuthors) {
+        //         if(idPost == postAuthor.getIdPost()) {
+        //             postCurrentAuthorsIds.add(postAuthor.getIdAuthor());
+        //         }
+        //     }
+        //     if(postCurrentAuthorsIds.size() > 0) {
+        //         int counter = postCurrentAuthorsIds.size();
+        //         for (int i=0; i<authors.size(); i++) {
+        //             Author author = authors.get(i);
+        //             // int idAuthor = author.getIdCSV();
+        //             int idAuthor = -1;
+        //             if(postCurrentAuthorsIds.contains(idAuthor)) {
+        //                 post.addAuthor(author);
+        //                 counter--;
+        //             }
+        //             if(counter == 0) {
+        //                 break;
+        //             }
+        //         }
+        //     }
 
-            for (Attachment attachment : attachments) {
-                if(attachment.getIdPost() == idPost) {
-                    post.addAttachment(attachment);
-                }
-            }
-            for (Comment comment : comments) {
-                if(comment.getIdPost() == idPost) {
-                    post.addComment(comment);
-                }
-            }
-            addPost(post, true);
-        }
+        //     for (Attachment attachment : attachments) {
+        //         // if(attachment.getIdPost() == idPost) {
+        //         if(-1 == idPost) {
+        //             post.addAttachment(attachment);
+        //         }
+        //     }
+        //     for (Comment comment : comments) {
+        //         if(comment.getIdPost() == idPost) {
+        //             post.addComment(comment);
+        //         }
+        //     }
+        //     addPost(post, true);
+        // }
+        postRepository.deleteAll();
+        postRepository.saveAll(posts);
+    }
+
+    public List<Post> getPosts() {
+        return (List<Post>) postRepository.findAll();
     }
 
     public List<Post> getPosts(SearchSettings searchSettings) {
@@ -91,7 +98,7 @@ public class PostManager {
         String tag = searchSettings.getTag();
         String authors = searchSettings.getAuthors();
         String word = searchSettings.getWord();
-        for (Post post : this.posts) {
+        for (Post post : postRepository.findAll()) {
 
             if(tag!=null && tag.length()>0 && !post.getTags().matches(String.format("(.+ )?%s( .+)?", tag))) {
                 continue;
@@ -149,31 +156,24 @@ public class PostManager {
         return posts;
     }
 
-    public Post getPost(String id) {
-        Post postToReturn = null;
-        for (Post post : posts) {
-            if(post.getId().equals(id)) {
-                postToReturn = post;
-                break;
-            }
+    public Post getPost(Long id) {
+        Optional<Post> post = postRepository.findById(id);
+        if(post.isPresent()) {
+            return post.get();
+        
+        } else {
+            return null;
         }
-        return postToReturn;
     }
     public List<Post> getPosts(Author author) {
-        List<Post> posts = new ArrayList<>();
-        for (Post post : this.posts) {
-            if(post.getAuthors().contains(author)) {
-                posts.add(post);
-            }
-        }
-        return posts;
+        return postRepository.findAllByAuthorsContaining(author);
     }
     public PostsWithComments getPostsWithComments(User user) {
         List<Post> posts = new ArrayList<>();
         List<List<Comment>> comments = new ArrayList<>();
         List<Comment> commentsAll = new ArrayList<>();
 
-        for (Post post : this.posts) {
+        for (Post post : getPosts()) {
             List<Comment> commentsPart = new ArrayList<>();
             for (Comment comment : post.getComments()) {
                 if(comment.getUser().equals(user)) {
@@ -189,32 +189,15 @@ public class PostManager {
         return new PostsWithComments(posts, comments, commentsAll);
     }
 
-    public Post addPost(Post post, boolean isFromCSV) {
-        Post postNew;
-        if(!isFromCSV) {
-            postNew = new Post(
-                UUID.randomUUID().toString(),
-                post.getPostContent(),
-                post.getTags(),
-                post.getAuthors(),
-                post.getAttachments()
-            );
-        } else {
-            post.setId(UUID.randomUUID().toString());
-            postNew = post;
-        }
-        posts.add(postNew);
-        return postNew;
-    }
     public Post addPost(Post post) {
-        return addPost(post, false);
+        return postRepository.save(post);
     }
 
-    public Post removePost(String id) {
+    public Post removePost(Long id) {
         Post post = getPost(id);
 
         if(post!=null) {
-            posts.remove(post);
+            postRepository.delete(post);
             for(Comment comment : post.getComments()) {
                 commentManager.removeComment(comment);
             }
@@ -226,7 +209,7 @@ public class PostManager {
         return post;
     }
 
-    public Post updatePost(String id, Post postUpdated) {
+    public Post updatePost(Long id, Post postUpdated) {
         Post post = getPost(id);
 
         if(post != null) {
@@ -234,6 +217,7 @@ public class PostManager {
             post.setTags(postUpdated.getTags());
             post.setAuthors(postUpdated.getAuthors());
             post.setAttachments(postUpdated.getAttachments());
+            postRepository.save(post);
         }
 
         return post;

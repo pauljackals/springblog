@@ -26,12 +26,15 @@ public class AttachmentController {
 	public ResponseEntity<Resource> serveFile(@PathVariable String idPost, @PathVariable String filename) {
 
 		try {
-            Resource file = storageService.loadAsResource(filename, idPost);
+            Long idPostParsed = Long.parseLong(idPost);
+
+            Resource file = storageService.loadAsResource(filename, idPostParsed);
+            String[] filenameSplit = file.getFilename().split("_", 2);
             return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", file.getFilename().substring(37)))
+                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", filenameSplit[1]))
                 .body(file);
 
-        } catch(StorageFileNotFoundException e) {
+        } catch(StorageFileNotFoundException|NumberFormatException e) {
             throw new ResourceNotFoundException();
         }
  	}

@@ -1,22 +1,24 @@
 package net.pauljackals.springblog.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@Entity
 public class Attachment {
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String filename;
-    private int idPost = -1;
 
-    public Attachment(String id, String filename) {
-        this.id = id;
+    public Attachment(String filename) {
         this.filename = filename;
-    }
-
-    public Attachment(int idPost, String filename) {
-        this.filename = filename;
-        this.idPost = idPost;
     }
 }

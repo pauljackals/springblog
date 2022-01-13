@@ -22,7 +22,15 @@ public class PostRestController {
 
     @GetMapping("/api/post/{id}")
     public ResponseEntity<?> getPost(@PathVariable String id) {
-        Post post = postManager.getPost(id);
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(id);
+            post = postManager.getPost(idParsed);
+        
+        } catch(NumberFormatException e) {
+            post = null;
+        }
+
         if(post==null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
         }

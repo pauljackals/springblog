@@ -24,7 +24,7 @@ public class PostExtras {
     private String authorsString;
 
     @Size(max = 8)
-    private List<String> attachmentsToDelete;
+    private List<Long> attachmentsToDelete;
 
     @Size(max = 8, message = "there must be no more than {max} attachments")
     @MultipartFilesCheck

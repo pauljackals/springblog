@@ -26,7 +26,14 @@ public class AuthorRestController {
 
     @GetMapping("/api/author/{id}/post")
     public ResponseEntity<?> getAuthorPosts(@PathVariable String id) {
-        Author author = authorManager.getAuthor(id);
+        Author author;
+        try {
+            Long idParsed = Long.parseLong(id);
+            author = authorManager.getAuthor(idParsed);
+        
+        } catch(NumberFormatException e) {
+            author = null;
+        }
 
         if(author==null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Author not found");

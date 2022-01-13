@@ -60,7 +60,14 @@ public class AuthorController {
 
     @GetMapping("/author/{id}")
     public String getAuthor(@PathVariable String id, Model model) {
-        Author author = authorManager.getAuthor(id);
+        Author author;
+        try {
+            Long idParsed = Long.parseLong(id);
+            author = authorManager.getAuthor(idParsed);
+        
+        } catch(NumberFormatException e) {
+            author = null;
+        }
 
         if(author==null) {
             throw new ResourceNotFoundException();

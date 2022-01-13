@@ -1,69 +1,52 @@
 package net.pauljackals.springblog.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
 import net.pauljackals.springblog.domain.Attachment;
+import net.pauljackals.springblog.repository.AttachmentRepository;
 import net.pauljackals.springblog.service.storage.StorageService;
 
 @Service
-@Getter
+@Transactional
 public class AttachmentManager {
-    private List<Attachment> attachments;
+    private AttachmentRepository attachmentRepository;
     private StorageService storageService;
     
     public AttachmentManager(
-        @Autowired List<Attachment> attachments,
-        @Autowired StorageService storageService
+        AttachmentRepository attachmentRepository,
+        StorageService storageService
     ) {
+        this.attachmentRepository = attachmentRepository;
         this.storageService = storageService;
-        setup(attachments);
     }
     
     public void setup(List<Attachment> attachments) {
-        this.attachments = Collections.synchronizedList(new ArrayList<>());
-        for (Attachment attachment : attachments) {
-            addAttachment(attachment, true);
-        }
+        attachmentRepository.deleteAll();
+        attachmentRepository.saveAll(attachments);
     }
 
-    public Attachment addAttachment(Attachment attachment, boolean isFromCSV) {
-        Attachment attachmentNew;
-        if(!isFromCSV) {
-            attachmentNew = new Attachment(
-                UUID.randomUUID().toString(),
-                attachment.getFilename()
-            );
-        } else {
-            attachment.setId(UUID.randomUUID().toString());
-            attachmentNew = attachment;
-        }
-        attachments.add(attachmentNew);
-        return attachmentNew;
+    public List<Attachment> getAttachments(){
+        return (List<Attachment>) attachmentRepository.findAll();
     }
+
     public Attachment addAttachment(Attachment attachment) {
-        return addAttachment(attachment, false);
+        return attachmentRepository.save(attachment);
     }
 
     public List<Attachment> addAttachments(List<Attachment> attachments) {
-        List<Attachment> attachmentsNew = new ArrayList<>();
-        for (Attachment attachment : attachments) {
-            attachmentsNew.add(addAttachment(attachment));
-        }
-        return attachmentsNew;
+        return (List<Attachment>) attachmentRepository.saveAll(attachments);
     }
 
-    public Attachment removeAttachment(Attachment attachment, String idPost) {
-        boolean result = attachments.remove(attachment);
-        if(result) {
+    public Attachment removeAttachment(Attachment attachment, Long idPost) {
+        if(attachmentRepository.existsById(attachment.getId())) {
+            attachmentRepository.delete(attachment);
             storageService.delete(attachment.getFilename(), idPost);
             return attachment;
+
         } else {
             return null;
         }

@@ -1,83 +1,60 @@
 package net.pauljackals.springblog.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
 import net.pauljackals.springblog.domain.Author;
+import net.pauljackals.springblog.repository.AuthorRepository;
 
-@Getter
 @Service
+@Transactional
 public class AuthorManager {
-    private List<Author> authors;
+    private AuthorRepository authorRepository;
 
-    public AuthorManager(@Autowired List<Author> authors) {
-        setup(authors);
+    public AuthorManager(AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
     }
 
     public void setup(List<Author> authors) {
-        this.authors = Collections.synchronizedList(new ArrayList<>());
-        for (Author author : authors) {
-            addAuthor(author, true);
-        }
+        authorRepository.deleteAll();
+        authorRepository.saveAll(authors);
     }
 
-    public Author addAuthor(Author author, boolean isFromCSV) {
-        Author authorNew;
-        if(!isFromCSV) {
-            authorNew = new Author(
-                UUID.randomUUID().toString(),
-                author.getFirstName(),
-                author.getLastName(),
-                author.getUsername()
-            );
-        } else {
-            author.setId(UUID.randomUUID().toString());
-            authorNew = author;
-        }
-        authors.add(authorNew);
-        return authorNew;
-    }
     public Author addAuthor(Author author) {
-        return addAuthor(author, false);
+        return authorRepository.save(author);
+    }
+
+    public List<Author> getAuthors() {
+        return (List<Author>) authorRepository.findAll();
     }
 
     public List<Author> getAuthors(String usernamePart) {
         if(usernamePart==null || usernamePart.length()==0) {
-            return this.authors;
+            return getAuthors();
         }
-        List<Author> authors = new ArrayList<>();
-        for (Author author : this.authors) {
-            if(author.getUsername().contains(usernamePart)) {
-                authors.add(author);
-            }
-        }
-        return authors;
+        return authorRepository.findByUsernameContaining(usernamePart);
     }
 
-    public Author getAuthor(String id) {
-        Author authorToReturn = null;
-        for (Author author : authors) {
-            if(author.getId().equals(id)) {
-                authorToReturn = author;
-                break;
-            }
+    public Author getAuthor(Long id) {
+        Optional<Author> author = authorRepository.findById(id);
+        if(author.isPresent()) {
+            return author.get();
+        
+        } else {
+            return null;
         }
-        return authorToReturn;
     }
     public Author getAuthorByUsername(String username) {
-        Author authorToReturn = null;
-        for (Author author : authors) {
-            if(author.getUsername().equals(username)) {
-                authorToReturn = author;
-                break;
-            }
+        Optional<Author> author = authorRepository.findByUsername(username);
+        if(author.isPresent()) {
+            return author.get();
+        
+        } else {
+            return null;
         }
-        return authorToReturn;
     }
 }

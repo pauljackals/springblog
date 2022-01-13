@@ -1,5 +1,9 @@
 package net.pauljackals.springblog.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -10,9 +14,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@Entity
 public class Comment {
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    // !!!!!!!!!!!! MOVE TO EXTRAS !!!!!!!!!!!!!
     @NotNull(message = "username is required")
     @Pattern(regexp = "^\\w{1,32}$", message = "username must not be empty and no longer than 32 letters/numbers")
     private String username;
@@ -22,19 +30,9 @@ public class Comment {
     private String commentContent;
     
     private User user;
-    private int idCSV = -1;
-    private int idPost = -1;
 
-    public Comment(String id, String commentContent, User user) {
-        this.id = id;
+    public Comment(String commentContent, User user) {
         this.commentContent = commentContent;
         this.user = user;
-    }
-
-    public Comment(int idCSV, int idPost, String username, String commentContent) {
-        this.username = username;
-        this.commentContent = commentContent;
-        this.idCSV = idCSV;
-        this.idPost = idPost;
     }
 }

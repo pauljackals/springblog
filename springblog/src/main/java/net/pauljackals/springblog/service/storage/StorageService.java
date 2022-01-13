@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 
 public interface StorageService {
 	void init();
-	void store(MultipartFile file, String idPost, String nameNew);
+	void store(MultipartFile file, Long idPost, String nameNew);
 	Stream<Path> loadAll();
 	List<Resource> loadAllAsResources();
-	Path load(String filename, String idPost);
-	Resource loadAsResource(String filename, String idPost);
+	Path load(String filename, Long idPost);
+	Resource loadAsResource(String filename, Long idPost);
 	void deleteAll();
-	void delete(String filename, String idPost);
+	void delete(String filename, Long idPost);
 }

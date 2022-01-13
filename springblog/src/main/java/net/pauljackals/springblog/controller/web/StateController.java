@@ -102,9 +102,9 @@ public class StateController {
         storageService.deleteAll();
         storageService.init();
 
-        authorManager.addAuthor(new Author("", "John", "Doe", "johndoe1"));
-        authorManager.addAuthor(new Author("", "Mary", "Jane", "maryjane123"));
-        authorManager.addAuthor(new Author("", "Bob", "Johnson", "bobby55"));
+        authorManager.addAuthor(new Author("John", "Doe", "johndoe1"));
+        authorManager.addAuthor(new Author("Mary", "Jane", "maryjane123"));
+        authorManager.addAuthor(new Author("Bob", "Johnson", "bobby55"));
 
         return "redirect:/";
     }
@@ -126,7 +126,7 @@ public class StateController {
             Author author = authors.get(i);
             int id = i+1;
             authorsCSVBuilder.append(String.format("%d,%s,%s,%s\n", id, author.getFirstName(), author.getLastName(), author.getUsername()));
-            authorsIds.put(author.getId(), id);
+            authorsIds.put(author.getId().toString(), id);
         }
         int idComment = 1;
         Map<String, String> attachmentsFilenames = new HashMap<>();
@@ -316,11 +316,12 @@ public class StateController {
             if(upload.size()>1 || upload.size()==1 && upload.get(0).getOriginalFilename().length()>0) {
                 Map<Integer, String> postsIds = new HashMap<>();
                 for (Post post : posts) {
-                    postsIds.put(post.getIdCSV(), post.getId());
+                    // postsIds.put(post.getIdCSV(), post.getId());
+                    postsIds.put(-1, post.getId().toString());
                 }
                 for(MultipartFile file : upload) {
                     String[] filenameSplit = file.getOriginalFilename().split("_", 2);
-                    storageService.store(file, postsIds.get(Integer.parseInt(filenameSplit[0])), filenameSplit[1]);
+                    storageService.store(file, Long.parseLong(postsIds.get(Integer.parseInt(filenameSplit[0]))), filenameSplit[1]);
                 }
             }
         }

@@ -28,7 +28,7 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public void store(MultipartFile file, String idPost, String nameNew) {
+	public void store(MultipartFile file, Long idPost, String nameNew) {
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file.");
@@ -61,12 +61,12 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public Path load(String filename, String idPost) {
+	public Path load(String filename, Long idPost) {
 		return rootLocation.resolve(idPost + "_" + filename);
 	}
 
 	@Override
-	public Resource loadAsResource(String filename, String idPost) {
+	public Resource loadAsResource(String filename, Long idPost) {
 		try {
 			Path file = load(filename, idPost);
 			Resource resource = new UrlResource(file.toUri());
@@ -85,7 +85,7 @@ public class FileSystemStorageService implements StorageService {
 	public List<Resource> loadAllAsResources() {
 		return loadAll().map(path -> {
 			String[] filenameSplit = path.getFileName().toString().split("_", 2);
-			return loadAsResource(filenameSplit[1], filenameSplit[0]);
+			return loadAsResource(filenameSplit[1], Long.parseLong(filenameSplit[0]));
 		}).collect(Collectors.toList());
 	}
 
@@ -95,7 +95,7 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public void delete(String filename, String idPost) {
+	public void delete(String filename, Long idPost) {
 		try {
 			Files.delete(rootLocation.resolve(idPost+"_"+filename));
 		} catch (IOException e) {

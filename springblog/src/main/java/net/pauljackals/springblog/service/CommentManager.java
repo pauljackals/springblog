@@ -1,86 +1,81 @@
 package net.pauljackals.springblog.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.User;
+import net.pauljackals.springblog.repository.CommentRepository;
 
 @Service
-@Getter
+@Transactional
 public class CommentManager {
-    private List<Comment> comments;
+    private CommentRepository commentRepository;
     private UserManager userManager;
     
     public CommentManager(
-        @Autowired List<Comment> comments,
-        @Autowired UserManager userManager
+        CommentRepository commentRepository,
+        UserManager userManager
     ) {
+        this.commentRepository = commentRepository;
         this.userManager = userManager;
-        setup(comments);
     }
     
     public void setup(List<Comment> comments) {
-        this.comments = Collections.synchronizedList(new ArrayList<>());
-        for (Comment comment : comments) {
-            addComment(comment, true);
-        }
+        commentRepository.saveAll(comments);
     }
 
-    public Comment getComment(String id) {
-        Comment commentToReturn = null;
-        for (Comment comment : comments) {
-            if(id.equals(comment.getId())) {
-                commentToReturn = comment;
-                break;
-            }
-        }
-        return commentToReturn;
+    public List<Comment> getComments() {
+        return (List<Comment>) commentRepository.findAll();
     }
 
-    public Comment addComment(Comment comment, boolean isFromCSV) {
-        Comment commentNew;
-        User user = userManager.createUserIfNew(comment.getUsername());
-        if(!isFromCSV) {
-            commentNew = new Comment(
-                UUID.randomUUID().toString(),
-                comment.getCommentContent(),
-                user
-            );
-        } else {
-            comment.setId(UUID.randomUUID().toString());
-            comment.setUser(user);
-            commentNew = comment;
-        }
+    public Comment getComment(Long id) {
+        Optional<Comment> comment = commentRepository.findById(id);
+        if(comment.isPresent()) {
+            return comment.get();
         
-        comments.add(commentNew);
-        return commentNew;
-    }
-    public Comment addComment(Comment comment) {
-        return addComment(comment, false);
-    }
-
-    public Comment removeComment(String id) {
-        Comment comment = getComment(id);
-        if(comment != null) {
-            comments.remove(comment);
+        } else {
+            return null;
         }
-        return comment;
-    }
-    public Comment removeComment(Comment comment) {
-        return comments.remove(comment) ? comment : null;
     }
 
-    public Comment updateComment(String id, Comment commentUpdated) {
+    public Comment addComment(Comment comment) {
+        User user = userManager.createUserIfNew(comment.getUsername());
+        comment.setUser(user);
+        return commentRepository.save(comment);
+    }
+
+    public Comment removeComment(Long id) {
+        Optional<Comment> commentOptional = commentRepository.findById(id);
+        if(commentOptional.isPresent()) {
+            Comment comment = commentOptional.get();
+            commentRepository.delete(comment);
+            return comment;
+
+        } else {
+            return null;
+        }
+    }
+    
+    public Comment removeComment(Comment comment) {
+        if(commentRepository.existsById(comment.getId())) {
+            commentRepository.delete(comment);
+            return comment;
+
+        } else {
+            return null;
+        }
+    }
+
+    public Comment updateComment(Long id, Comment commentUpdated) {
         Comment comment = getComment(id);
         if(comment != null) {
             comment.setCommentContent(commentUpdated.getCommentContent());
+            commentRepository.save(comment);
         }
         return comment;
     }

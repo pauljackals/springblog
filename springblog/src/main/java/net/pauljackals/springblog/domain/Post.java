@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -14,8 +18,11 @@ import net.pauljackals.springblog.validators.duplicates.Duplicates;
 
 @Data
 @NoArgsConstructor
+@Entity
 public class Post {
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotEmpty(message = "post must not be empty")
     @Size(max = 1024, message = "post must be no longer than {max} characters")
@@ -28,20 +35,12 @@ public class Post {
     private List<Author> authors = Collections.synchronizedList(new ArrayList<>());
     private List<Attachment> attachments = Collections.synchronizedList(new ArrayList<>());
     private List<Comment> comments = Collections.synchronizedList(new ArrayList<>());
-    private int idCSV = -1;
 
-    public Post(String id, String postContent, String tags, List<Author> authors, List<Attachment> attachments) {
-        this.id = id;
+    public Post(String postContent, String tags, List<Author> authors, List<Attachment> attachments) {
         this.postContent = postContent;
         this.tags = tags;
         this.authors.addAll(authors);
         this.attachments.addAll(attachments);
-    }
-
-    public Post(int idCSV, String postContent, String tags) {
-        this.postContent = postContent;
-        this.tags = tags;
-        this.idCSV = idCSV;
     }
 
     public void addAuthor(Author author) {

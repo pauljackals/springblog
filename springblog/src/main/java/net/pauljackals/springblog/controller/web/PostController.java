@@ -82,7 +82,7 @@ public class PostController {
         }
         return attachments;
     }
-    private void validateAttachments(List<Attachment> original, List<Attachment> toAdd, List<String> toDeleteIds, Errors errors, String field) {
+    private void validateAttachments(List<Attachment> original, List<Attachment> toAdd, List<Long> toDeleteIds, Errors errors, String field) {
         if(errors.hasFieldErrors(field)) {
             return;
         }
@@ -146,7 +146,7 @@ public class PostController {
         Post postNew = postManager.addPost(post);
 
         if(attachments.size()>0) {
-            String idPost = postNew.getId();
+            Long idPost = postNew.getId();
             for(MultipartFile file : files) {
                 storageService.store(file, idPost, null);
             }
@@ -157,7 +157,14 @@ public class PostController {
 
     @GetMapping("/post/{id}/edit")
     public String editPostForm(@PathVariable String id, Model model) {
-        Post post = postManager.getPost(id);
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(id);
+            post = postManager.getPost(idParsed);
+
+        } catch (Exception e) {
+            post = null;
+        }
 
         if(post==null) {
             throw new ResourceNotFoundException();
@@ -189,7 +196,15 @@ public class PostController {
         Errors errorsPostExtras,
         Model model
     ) {
-        Post postOriginal = postManager.getPost(id);
+        Post postOriginal;
+        Long idParsed = null;
+        try {
+            idParsed = Long.parseLong(id);
+            postOriginal = postManager.getPost(idParsed);
+
+        } catch (Exception e) {
+            postOriginal = null;
+        }
         if(postOriginal==null) {
             throw new ResourceNotFoundException();
         }
@@ -200,7 +215,7 @@ public class PostController {
         List<MultipartFile> files = postExtras.getAttachmentsFiles();
         List<Attachment> attachmentsToAdd = attachmentManager.addAttachments(createAttachments(files));
         List<Attachment> attachmentsUpdated = new ArrayList<>();
-        List<String> attachmentsToDeleteIds = postExtras.getAttachmentsToDelete();
+        List<Long> attachmentsToDeleteIds = postExtras.getAttachmentsToDelete();
         validateAttachments(attachmentsOriginal, attachmentsToAdd, attachmentsToDeleteIds, errorsPostExtras, "attachmentsFiles");
 
         List<Author> authors = getAuthorsByUsernames(authorsString);
@@ -224,7 +239,7 @@ public class PostController {
             }
             attachmentsUpdated.addAll(attachmentsRemaining);
             for(Attachment attachment : attachmentsToDelete) {
-                attachmentManager.removeAttachment(attachment, id);
+                attachmentManager.removeAttachment(attachment, Long.parseLong(id));
             }
         } else {
             attachmentsUpdated.addAll(attachmentsOriginal);
@@ -234,10 +249,10 @@ public class PostController {
         post.setAttachments(attachmentsUpdated);
 
         post.setAuthors(authors);
-        Post postUpdated = postManager.updatePost(id, post);
+        Post postUpdated = postManager.updatePost(idParsed, post);
 
         if(attachmentsToAdd.size()>0) {
-            String idPost = postUpdated.getId();
+            Long idPost = postUpdated.getId();
             for(MultipartFile file : files) {
                 storageService.store(file, idPost, null);
             }
@@ -248,7 +263,14 @@ public class PostController {
 
     @GetMapping("/post/{id}")
     public String getPost(@PathVariable String id, Model model) {
-        Post post = postManager.getPost(id);
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(id);
+            post = postManager.getPost(idParsed);
+
+        } catch (Exception e) {
+            post = null;
+        }
 
         if(post==null) {
             throw new ResourceNotFoundException();
@@ -289,7 +311,15 @@ public class PostController {
 
     @GetMapping("/post/{id}/delete")
     public String removePost(@PathVariable String id) {
-        if(postManager.removePost(id)==null) {
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(id);
+            post = postManager.removePost(idParsed);
+
+        } catch (Exception e) {
+            post = null;
+        }
+        if(post==null) {
             throw new ResourceNotFoundException();
         }
 

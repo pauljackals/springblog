@@ -36,7 +36,14 @@ public class CommentController {
         Errors errors,
         Model model
     ) {
-        Post post = postManager.getPost(idPost);
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(idPost);
+            post = postManager.getPost(idParsed);
+
+        } catch (Exception e) {
+            post = null;
+        }
 
         if(post==null) {
             throw new ResourceNotFoundException();
@@ -54,15 +61,32 @@ public class CommentController {
 
     @GetMapping("/post/{idPostPath}/comment/{id}/delete")
     public String removeComment(@PathVariable("idPostPath") String idPost, @PathVariable("id") String id) {
-        Post post = postManager.getPost(idPost);
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(idPost);
+            post = postManager.getPost(idParsed);
+
+        } catch (Exception e) {
+            post = null;
+        }
+
         if(post==null) {
             throw new ResourceNotFoundException();
         }
 
-        Comment comment = commentManager.getComment(id);
+        Comment comment;
+        try {
+            Long idParsed = Long.parseLong(id);
+            comment = commentManager.getComment(idParsed);
+        
+        } catch(NumberFormatException e) {
+            comment = null;
+        }
+
         if(comment==null || !post.removeComment(comment)) {
             throw new ResourceNotFoundException();
         }
+
         commentManager.removeComment(comment);
 
         return String.format("redirect:/post/%s", post.getId());
@@ -70,8 +94,23 @@ public class CommentController {
 
     @GetMapping("/post/{idPost}/comment/{id}/edit")
     public String getCommentEdit(@PathVariable String idPost, @PathVariable String id, Model model) {
-        Post post = postManager.getPost(idPost);
-        Comment comment = commentManager.getComment(id);
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(idPost);
+            post = postManager.getPost(idParsed);
+
+        } catch (Exception e) {
+            post = null;
+        }
+
+        Comment comment;
+        try {
+            Long idParsed = Long.parseLong(id);
+            comment = commentManager.getComment(idParsed);
+        
+        } catch(NumberFormatException e) {
+            comment = null;
+        }
 
         if(post==null || comment==null) {
             throw new ResourceNotFoundException();
@@ -93,15 +132,31 @@ public class CommentController {
         Errors errors,
         Model model
     ) {
-        Post post = postManager.getPost(idPost);
-        Comment comment = commentManager.getComment(id);
+        Post post;
+        try {
+            Long idParsed = Long.parseLong(idPost);
+            post = postManager.getPost(idParsed);
+
+        } catch (Exception e) {
+            post = null;
+        }
+
+        Comment comment;
+        Long idParsed = null;
+        try {
+            idParsed = Long.parseLong(id);
+            comment = commentManager.getComment(idParsed);
+        
+        } catch(NumberFormatException e) {
+            comment = null;
+        }
 
         if(post==null || comment==null) {
             throw new ResourceNotFoundException();
         }
 
         if(errors.hasErrors()) {
-            commentEdited.setId(id);
+            commentEdited.setId(idParsed);
             commentEdited.setUser(comment.getUser());
             model.addAllAttributes(Map.ofEntries(
                 Map.entry("post", post),
@@ -109,7 +164,7 @@ public class CommentController {
             ));
             return "post";
         }
-        Comment commentUpdated = commentManager.updateComment(id, commentEdited);
+        Comment commentUpdated = commentManager.updateComment(idParsed, commentEdited);
 
         return String.format("redirect:/post/%s#c_%s", post.getId(), commentUpdated.getId());
     }

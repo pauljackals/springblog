@@ -1,74 +1,71 @@
 package net.pauljackals.springblog.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
 import net.pauljackals.springblog.domain.User;
+import net.pauljackals.springblog.repository.UserRepository;
 
 @Service
-@Getter
+@Transactional
 public class UserManager {
-    private List<User> users;
+    private UserRepository userRepository;
 
-    public UserManager() {
-        setup();
+    public UserManager(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public void setup() {
-        this.users = Collections.synchronizedList(new ArrayList<>());
+        userRepository.deleteAll();
     }
 
-    public List<User> getUsers(String username) {
-        if(username==null || username.length()==0) {
-            return this.users;
-        }
-        List<User> users = new ArrayList<>();
-        for (User user : this.users) {
-            if(user.getUsername().contains(username)) {
-                users.add(user);
-            }
-        }
-        return users;
+    public List<User> getUsers() {
+        return (List<User>) userRepository.findAll();
     }
 
-    public User getUser(String id) {
-        User userToReturn = null;
-        for (User user : users) {
-            if(user.getId().equals(id)) {
-                userToReturn = user;
-                break;
-            }
+    public List<User> getUsers(String usernamePart) {
+        if(usernamePart==null || usernamePart.length()==0) {
+            return getUsers();
         }
-        return userToReturn;
+        return userRepository.findByUsernameContaining(usernamePart);
+    }
+
+    public User getUser(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()) {
+            return user.get();
+        
+        } else {
+            return null;
+        }
+    }
+
+    public User getUser(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if(user.isPresent()) {
+            return user.get();
+            
+        } else {
+            return null;
+        }
     }
 
     public User addUser(User user) {
-        User userNew = new User(
-            UUID.randomUUID().toString(),
-            user.getUsername()
-        );
-        users.add(userNew);
-        return userNew;
+        return userRepository.save(user);
     }
 
     public User createUserIfNew(String username) {
-        User userFound = null;
-        for (User user : users) {
-            if(user.getUsername().equals(username)) {
-                userFound = user;
-                break;
-            }
-        }
+        User userFound = getUser(username);
+
         if(userFound!=null) {
             return userFound;
         } else {
-            User user = addUser(new User(username));
-            return user;
+            return addUser(new User(username));
         }
     }
 }
