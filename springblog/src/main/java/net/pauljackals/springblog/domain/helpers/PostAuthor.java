@@ -1,4 +1,4 @@
-package net.pauljackals.springblog.domain;
+package net.pauljackals.springblog.domain.helpers;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

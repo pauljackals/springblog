@@ -36,7 +36,7 @@ import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
-import net.pauljackals.springblog.domain.PostAuthor;
+import net.pauljackals.springblog.domain.helpers.PostAuthor;
 import net.pauljackals.springblog.domain.helpers.StateFiles;
 import net.pauljackals.springblog.exceptions.StateExportException;
 import net.pauljackals.springblog.exceptions.StateImportException;
