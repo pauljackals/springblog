@@ -60,7 +60,14 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     public String getUser(@PathVariable String id, Model model) {
-        User user = userManager.getUser(id);
+        User user;
+        try {
+            Long idParsed = Long.parseLong(id);
+            user = userManager.getUser(idParsed);
+
+        } catch (NumberFormatException e) {
+            user = null;
+        }
 
         if(user==null) {
             throw new ResourceNotFoundException();

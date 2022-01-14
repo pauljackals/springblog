@@ -23,7 +23,7 @@ public class SearchSettings {
     private Sorting sortByAuthors;
     private Sorting sortByContent;
     
-    @Pattern(regexp = "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$", message = "wrong id format")
+    @Pattern(regexp = "^\\d{1,20}$", message = "wrong id format")
     String id;
     
     @Pattern(regexp = "^(\\w{1,32})?$", message = "username must be no longer than 32 letters/numbers")
