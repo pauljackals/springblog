@@ -141,7 +141,7 @@ public class PostController {
         List<MultipartFile> files = postExtras.getAttachmentsFiles();
         List<Attachment> attachments = attachmentManager.addAttachments(createAttachments(files));
 
-        post.addAuthors(authors);
+        post.setAuthors(authors);
         post.addAttachments(attachments);
         Post postNew = postManager.addPost(post);
 

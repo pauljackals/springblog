@@ -1,13 +1,15 @@
 package net.pauljackals.springblog.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -32,9 +34,14 @@ public class Post {
     @Duplicates
     private String tags;
 
-    private List<Author> authors = Collections.synchronizedList(new ArrayList<>());
-    private List<Attachment> attachments = Collections.synchronizedList(new ArrayList<>());
-    private List<Comment> comments = Collections.synchronizedList(new ArrayList<>());
+    @ManyToMany
+    private List<Author> authors = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Attachment> attachments = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     public Post(String postContent, String tags, List<Author> authors, List<Attachment> attachments) {
         this.postContent = postContent;
