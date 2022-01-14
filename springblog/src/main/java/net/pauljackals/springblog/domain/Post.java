@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -40,7 +41,8 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Attachment> attachments = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy(value = "id")
     private List<Comment> comments = new ArrayList<>();
 
     public Post(String postContent, String tags, List<Author> authors, List<Attachment> attachments) {

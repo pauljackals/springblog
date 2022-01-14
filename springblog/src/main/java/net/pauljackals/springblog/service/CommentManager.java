@@ -8,21 +8,17 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import net.pauljackals.springblog.domain.Comment;
-import net.pauljackals.springblog.domain.User;
 import net.pauljackals.springblog.repository.CommentRepository;
 
 @Service
 @Transactional
 public class CommentManager {
     private CommentRepository commentRepository;
-    private UserManager userManager;
     
     public CommentManager(
-        CommentRepository commentRepository,
-        UserManager userManager
+        CommentRepository commentRepository
     ) {
         this.commentRepository = commentRepository;
-        this.userManager = userManager;
     }
     
     public void setup(List<Comment> comments) {
@@ -44,8 +40,6 @@ public class CommentManager {
     }
 
     public Comment addComment(Comment comment) {
-        User user = userManager.createUserIfNew(comment.getUsername());
-        comment.setUser(user);
         return commentRepository.save(comment);
     }
 
@@ -71,12 +65,8 @@ public class CommentManager {
         }
     }
 
-    public Comment updateComment(Long id, Comment commentUpdated) {
-        Comment comment = getComment(id);
-        if(comment != null) {
-            comment.setCommentContent(commentUpdated.getCommentContent());
-            commentRepository.save(comment);
-        }
-        return comment;
+    public Comment updateComment(Comment comment, Comment commentUpdated) {
+        comment.setCommentContent(commentUpdated.getCommentContent());
+        return commentRepository.save(comment);
     }
 }

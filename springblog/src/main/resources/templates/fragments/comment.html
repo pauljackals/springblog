@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-    <div class="comment" th:attr="id=${'c_' + comment.id}" th:with="isEdited=${commentEdited!=null && commentEdited.id.equals(comment.id)}">
+    <div class="comment" th:attr="id=${'c_' + comment.id}" th:with="isEdited=${commentEdited!=null && commentEdited.id==comment.id}">
         <div class="config-buttons-wrapper">
             <th:block th:switch="${isEdited}">
                 <a th:case="true" th:href="@{/post/{idPost}(idPost=${post.id})} + ${'#c_'+comment.id}">

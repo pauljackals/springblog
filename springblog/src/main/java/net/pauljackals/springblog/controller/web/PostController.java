@@ -20,6 +20,7 @@ import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
+import net.pauljackals.springblog.domain.helpers.CommentExtras;
 import net.pauljackals.springblog.domain.helpers.PostExtras;
 import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.exceptions.ResourceNotFoundException;
@@ -278,7 +279,8 @@ public class PostController {
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", post),
-            Map.entry("commentTemplate", new Comment())
+            Map.entry("commentTemplate", new Comment()),
+            Map.entry("commentExtras", new CommentExtras())
         ));
         return "post";
     }

@@ -25,16 +25,16 @@ import net.pauljackals.springblog.repository.PostRepository;
 @Transactional
 public class PostManager {
     private PostRepository postRepository;
-    private CommentManager commentManager;
+    // private CommentManager commentManager;
     private AttachmentManager attachmentManager;
     
     public PostManager(
         PostRepository postRepository,
-        AttachmentManager attachmentManager,
-        CommentManager commentManager
+        AttachmentManager attachmentManager
+        // CommentManager commentManager
     ) {
         this.postRepository = postRepository;
-        this.commentManager = commentManager;
+        // this.commentManager = commentManager;
         this.attachmentManager = attachmentManager;
     }
 
@@ -43,48 +43,6 @@ public class PostManager {
         List<PostAuthor> postsAuthors,
         List<Author> authors
     ) {
-        // this.posts = Collections.synchronizedList(new ArrayList<>());
-
-        // List<Attachment> attachments = attachmentManager.getAttachments();
-        // List<Comment> comments = commentManager.getComments();
-
-        // for (Post post : posts) {
-        //     int idPost = post.getIdCSV();
-        //     List<Integer> postCurrentAuthorsIds = new ArrayList<>();
-        //     for (PostAuthor postAuthor : postsAuthors) {
-        //         if(idPost == postAuthor.getIdPost()) {
-        //             postCurrentAuthorsIds.add(postAuthor.getIdAuthor());
-        //         }
-        //     }
-        //     if(postCurrentAuthorsIds.size() > 0) {
-        //         int counter = postCurrentAuthorsIds.size();
-        //         for (int i=0; i<authors.size(); i++) {
-        //             Author author = authors.get(i);
-        //             // int idAuthor = author.getIdCSV();
-        //             int idAuthor = -1;
-        //             if(postCurrentAuthorsIds.contains(idAuthor)) {
-        //                 post.addAuthor(author);
-        //                 counter--;
-        //             }
-        //             if(counter == 0) {
-        //                 break;
-        //             }
-        //         }
-        //     }
-
-        //     for (Attachment attachment : attachments) {
-        //         // if(attachment.getIdPost() == idPost) {
-        //         if(-1 == idPost) {
-        //             post.addAttachment(attachment);
-        //         }
-        //     }
-        //     for (Comment comment : comments) {
-        //         if(comment.getIdPost() == idPost) {
-        //             post.addComment(comment);
-        //         }
-        //     }
-        //     addPost(post, true);
-        // }
         postRepository.deleteAll();
         postRepository.saveAll(posts);
     }
@@ -198,9 +156,9 @@ public class PostManager {
 
         if(post!=null) {
             postRepository.delete(post);
-            for(Comment comment : post.getComments()) {
-                commentManager.removeComment(comment);
-            }
+            // for(Comment comment : post.getComments()) {
+            //     commentManager.removeComment(comment);
+            // }
             for(Attachment attachment : post.getAttachments()) {
                 attachmentManager.removeAttachment(attachment, post.getId());
             }

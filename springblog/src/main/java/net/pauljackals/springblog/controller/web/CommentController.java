@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -15,18 +14,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
+import net.pauljackals.springblog.domain.helpers.CommentExtras;
 import net.pauljackals.springblog.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.service.CommentManager;
 import net.pauljackals.springblog.service.PostManager;
+import net.pauljackals.springblog.service.UserManager;
 
 @Controller
 public class CommentController {
     private CommentManager commentManager;
     private PostManager postManager;
+    private UserManager userManager;
 
-    public CommentController(@Autowired PostManager postManager, @Autowired CommentManager commentManager) {
+    public CommentController(
+        PostManager postManager,
+        CommentManager commentManager,
+        UserManager userManager
+    ) {
         this.commentManager = commentManager;
         this.postManager = postManager;
+        this.userManager = userManager;
     }
 
     @PostMapping("/post/{idPostPath}")
@@ -34,6 +41,8 @@ public class CommentController {
         @PathVariable("idPostPath") String idPost,
         @Valid @ModelAttribute("commentTemplate") Comment comment,
         Errors errors,
+        @Valid CommentExtras commentExtras,
+        Errors errorsExtras,
         Model model
     ) {
         Post post;
@@ -41,20 +50,20 @@ public class CommentController {
             Long idParsed = Long.parseLong(idPost);
             post = postManager.getPost(idParsed);
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             post = null;
         }
-
         if(post==null) {
             throw new ResourceNotFoundException();
         }
 
-        if(errors.hasErrors()) {
+        if(errors.hasErrors() || errorsExtras.hasErrors()) {
             model.addAttribute("post", post);
             return "post";
         }
-        Comment commentNew = commentManager.addComment(comment);
-        post.addComment(commentNew);
+        comment.setUser(userManager.createUserIfNew(commentExtras.getUsername()));
+        post.addComment(comment);
+        commentManager.addComment(comment);
 
         return String.format("redirect:/post/%s", post.getId());
     }
@@ -66,10 +75,9 @@ public class CommentController {
             Long idParsed = Long.parseLong(idPost);
             post = postManager.getPost(idParsed);
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             post = null;
         }
-
         if(post==null) {
             throw new ResourceNotFoundException();
         }
@@ -82,7 +90,6 @@ public class CommentController {
         } catch(NumberFormatException e) {
             comment = null;
         }
-
         if(comment==null || !post.removeComment(comment)) {
             throw new ResourceNotFoundException();
         }
@@ -99,8 +106,11 @@ public class CommentController {
             Long idParsed = Long.parseLong(idPost);
             post = postManager.getPost(idParsed);
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             post = null;
+        }
+        if(post==null) {
+            throw new ResourceNotFoundException();
         }
 
         Comment comment;
@@ -111,14 +121,14 @@ public class CommentController {
         } catch(NumberFormatException e) {
             comment = null;
         }
-
-        if(post==null || comment==null) {
+        if(comment==null) {
             throw new ResourceNotFoundException();
         }
 
         model.addAllAttributes(Map.ofEntries(
             Map.entry("post", post),
             Map.entry("commentTemplate", new Comment()),
+            Map.entry("commentExtras", new CommentExtras()),
             Map.entry("commentEdited", comment)
         ));
         return "post";
@@ -140,6 +150,9 @@ public class CommentController {
         } catch (Exception e) {
             post = null;
         }
+        if(post==null) {
+            throw new ResourceNotFoundException();
+        }
 
         Comment comment;
         Long idParsed = null;
@@ -150,8 +163,7 @@ public class CommentController {
         } catch(NumberFormatException e) {
             comment = null;
         }
-
-        if(post==null || comment==null) {
+        if(comment==null) {
             throw new ResourceNotFoundException();
         }
 
@@ -160,11 +172,12 @@ public class CommentController {
             commentEdited.setUser(comment.getUser());
             model.addAllAttributes(Map.ofEntries(
                 Map.entry("post", post),
-                Map.entry("commentTemplate", new Comment())
+                Map.entry("commentTemplate", new Comment()),
+                Map.entry("commentExtras", new CommentExtras())
             ));
             return "post";
         }
-        Comment commentUpdated = commentManager.updateComment(idParsed, commentEdited);
+        Comment commentUpdated = commentManager.updateComment(comment, commentEdited);
 
         return String.format("redirect:/post/%s#c_%s", post.getId(), commentUpdated.getId());
     }
