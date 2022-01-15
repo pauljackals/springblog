@@ -18,6 +18,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
 import com.opencsv.exceptions.CsvException;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -121,33 +122,20 @@ public class StateController {
         StringBuilder commentsCSVBuilder = new StringBuilder("id,username,id_post,comment_content\n");
         StringBuilder attachmentsCSVBuilder = new StringBuilder("id_post,filename\n");
 
-        Map<String, Integer> authorsIds = new HashMap<>();
-        for (int i = 0; i < authors.size(); i++) {
-            Author author = authors.get(i);
-            int id = i+1;
-            authorsCSVBuilder.append(String.format("%d,%s,%s,%s\n", id, author.getFirstName(), author.getLastName(), author.getUsername()));
-            authorsIds.put(author.getId().toString(), id);
+        for (Author author : authors) {
+            authorsCSVBuilder.append(String.format("%d,%s,%s,%s\n", author.getId(), author.getFirstName(), author.getLastName(), author.getUsername()));
         }
-        int idComment = 1;
-        Map<String, String> attachmentsFilenames = new HashMap<>();
-        for (int i = 0; i < posts.size(); i++) {
-            Post post = posts.get(i);
-            int id = i+1;
-            postsCSVBuilder.append(String.format("%d,\"%s\",%s\n", id, post.getPostContent().replace("\"", "\"\""), post.getTags()));
+        for(Post post : posts) {
+            Long idPost = post.getId();
+            postsCSVBuilder.append(String.format("%d,\"%s\",%s\n", idPost, StringEscapeUtils.escapeCsv(post.getPostContent()), post.getTags()));
             for (Author author : post.getAuthors()) {
-                postsAuthorsCSVBuilder.append(String.format("%d,%d\n", id, authorsIds.get(author.getId())));
+                postsAuthorsCSVBuilder.append(String.format("%d,%d\n", idPost, author.getId()));
             }
             for (Comment comment : post.getComments()) {
-                commentsCSVBuilder.append(String.format("%d,%s,%d,\"%s\"\n", idComment, comment.getUser().getUsername(), id, comment.getCommentContent().replace("\"", "\"\"")));
-                idComment++;
+                commentsCSVBuilder.append(String.format("%d,%s,%d,%s\n", comment.getId(), comment.getUser().getUsername(), idPost, StringEscapeUtils.escapeCsv(comment.getCommentContent())));
             }
             for (Attachment attachment : post.getAttachments()) {
-                String attachmentFilename = attachment.getFilename();
-                attachmentsCSVBuilder.append(String.format("%d,%s\n", id, attachmentFilename));
-                attachmentsFilenames.put(
-                    post.getId() + "_" + attachmentFilename,
-                    id + "_" + attachmentFilename
-                );
+                attachmentsCSVBuilder.append(String.format("%d,%s\n", idPost, attachment.getFilename()));
             }
         }
 
@@ -175,7 +163,7 @@ public class StateController {
                 zipOutputStream.closeEntry();
             }
             for (Resource attachmentFile : attachmentsFiles) {
-                ZipEntry zipEntry = new ZipEntry("upload/" + attachmentsFilenames.get(attachmentFile.getFilename()));
+                ZipEntry zipEntry = new ZipEntry("upload/" + attachmentFile.getFilename());
                 zipOutputStream.putNextEntry(zipEntry);
                 zipOutputStream.write(attachmentFile.getInputStream().readAllBytes());
                 zipOutputStream.closeEntry();
