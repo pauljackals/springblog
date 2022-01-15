@@ -43,8 +43,8 @@ public class AttachmentManager {
 
     public Attachment removeAttachment(Attachment attachment, Long idPost) {
         if(attachmentRepository.existsById(attachment.getId())) {
-            attachmentRepository.delete(attachment);
             storageService.delete(attachment.getFilename(), idPost);
+            attachmentRepository.delete(attachment);
             return attachment;
 
         } else {

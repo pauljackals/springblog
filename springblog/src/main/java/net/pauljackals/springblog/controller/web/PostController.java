@@ -214,7 +214,7 @@ public class PostController {
 
         List<Attachment> attachmentsOriginal = postOriginal.getAttachments();
         List<MultipartFile> files = postExtras.getAttachmentsFiles();
-        List<Attachment> attachmentsToAdd = attachmentManager.addAttachments(createAttachments(files));
+        List<Attachment> attachmentsToAdd = createAttachments(files);
         List<Attachment> attachmentsUpdated = new ArrayList<>();
         List<Long> attachmentsToDeleteIds = postExtras.getAttachmentsToDelete();
         validateAttachments(attachmentsOriginal, attachmentsToAdd, attachmentsToDeleteIds, errorsPostExtras, "attachmentsFiles");
@@ -240,7 +240,7 @@ public class PostController {
             }
             attachmentsUpdated.addAll(attachmentsRemaining);
             for(Attachment attachment : attachmentsToDelete) {
-                attachmentManager.removeAttachment(attachment, Long.parseLong(id));
+                attachmentManager.removeAttachment(attachment, idParsed);
             }
         } else {
             attachmentsUpdated.addAll(attachmentsOriginal);

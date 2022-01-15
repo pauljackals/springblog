@@ -152,10 +152,10 @@ public class PostManager {
         Post post = getPost(id);
 
         if(post!=null) {
-            postRepository.delete(post);
             for(Attachment attachment : post.getAttachments()) {
                 attachmentManager.removeAttachment(attachment, post.getId());
             }
+            postRepository.delete(post);
         }
 
         return post;
