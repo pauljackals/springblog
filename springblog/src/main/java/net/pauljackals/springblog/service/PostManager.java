@@ -25,16 +25,13 @@ import net.pauljackals.springblog.repository.PostRepository;
 @Transactional
 public class PostManager {
     private PostRepository postRepository;
-    // private CommentManager commentManager;
     private AttachmentManager attachmentManager;
     
     public PostManager(
         PostRepository postRepository,
         AttachmentManager attachmentManager
-        // CommentManager commentManager
     ) {
         this.postRepository = postRepository;
-        // this.commentManager = commentManager;
         this.attachmentManager = attachmentManager;
     }
 
@@ -124,7 +121,7 @@ public class PostManager {
         }
     }
     public List<Post> getPosts(Author author) {
-        return postRepository.findAllByAuthorsContaining(author);
+        return postRepository.findAllByAuthorsContainingOrderById(author);
     }
     public PostsWithComments getPostsWithComments(User user) {
         List<Post> posts = new ArrayList<>();
@@ -156,9 +153,6 @@ public class PostManager {
 
         if(post!=null) {
             postRepository.delete(post);
-            // for(Comment comment : post.getComments()) {
-            //     commentManager.removeComment(comment);
-            // }
             for(Attachment attachment : post.getAttachments()) {
                 attachmentManager.removeAttachment(attachment, post.getId());
             }
