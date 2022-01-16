@@ -15,7 +15,6 @@ import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
 import net.pauljackals.springblog.domain.User;
-import net.pauljackals.springblog.domain.helpers.PostAuthor;
 import net.pauljackals.springblog.domain.helpers.PostsWithComments;
 import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.domain.helpers.Sorting;
@@ -35,13 +34,11 @@ public class PostManager {
         this.attachmentManager = attachmentManager;
     }
 
-    public void setup(
-        List<Post> posts,
-        List<PostAuthor> postsAuthors,
-        List<Author> authors
-    ) {
+    public void reset() {
         postRepository.deleteAll();
-        postRepository.saveAll(posts);
+    }
+    public List<Post> setup(List<Post> posts) {
+        return (List<Post>) postRepository.saveAll(posts);
     }
 
     public List<Post> getPosts() {

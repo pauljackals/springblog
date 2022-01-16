@@ -19,7 +19,7 @@ public class UserManager {
         this.userRepository = userRepository;
     }
 
-    public void setup() {
+    public void reset() {
         userRepository.deleteAll();
     }
 

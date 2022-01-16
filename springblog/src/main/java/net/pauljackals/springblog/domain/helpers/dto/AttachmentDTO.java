@@ -1,4 +1,4 @@
-package net.pauljackals.springblog.domain.helpers;
+package net.pauljackals.springblog.domain.helpers.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostAuthor {
-    int idAuthor = -1;
-    int idPost = -1;
+public class AttachmentDTO {
+    Long idPost;
+    String filename;
 }

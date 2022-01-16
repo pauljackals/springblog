@@ -21,10 +21,6 @@ public class CommentManager {
         this.commentRepository = commentRepository;
     }
     
-    public void setup(List<Comment> comments) {
-        commentRepository.saveAll(comments);
-    }
-
     public List<Comment> getComments() {
         return (List<Comment>) commentRepository.findAll();
     }

@@ -19,9 +19,11 @@ public class AuthorManager {
         this.authorRepository = authorRepository;
     }
 
-    public void setup(List<Author> authors) {
+    public void reset() {
         authorRepository.deleteAll();
-        authorRepository.saveAll(authors);
+    }
+    public List<Author> setup(List<Author> authors) {
+        return (List<Author>) authorRepository.saveAll(authors);
     }
 
     public Author addAuthor(Author author) {

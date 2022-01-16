@@ -23,11 +23,6 @@ public class AttachmentManager {
         this.attachmentRepository = attachmentRepository;
         this.storageService = storageService;
     }
-    
-    public void setup(List<Attachment> attachments) {
-        attachmentRepository.deleteAll();
-        attachmentRepository.saveAll(attachments);
-    }
 
     public List<Attachment> getAttachments(){
         return (List<Attachment>) attachmentRepository.findAll();

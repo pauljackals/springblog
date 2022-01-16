@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -37,13 +38,13 @@ import net.pauljackals.springblog.domain.Attachment;
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Comment;
 import net.pauljackals.springblog.domain.Post;
-import net.pauljackals.springblog.domain.helpers.PostAuthor;
 import net.pauljackals.springblog.domain.helpers.StateFiles;
+import net.pauljackals.springblog.domain.helpers.dto.AttachmentDTO;
+import net.pauljackals.springblog.domain.helpers.dto.CommentDTO;
+import net.pauljackals.springblog.domain.helpers.dto.PostAuthor;
 import net.pauljackals.springblog.exceptions.StateExportException;
 import net.pauljackals.springblog.exceptions.StateImportException;
-import net.pauljackals.springblog.service.AttachmentManager;
 import net.pauljackals.springblog.service.AuthorManager;
-import net.pauljackals.springblog.service.CommentManager;
 import net.pauljackals.springblog.service.PostManager;
 import net.pauljackals.springblog.service.UserManager;
 import net.pauljackals.springblog.service.storage.StorageService;
@@ -52,9 +53,7 @@ import net.pauljackals.springblog.service.storage.StorageService;
 public class StateController {
     private AuthorManager authorManager;
     private PostManager postManager;
-    private CommentManager commentManager;
     private UserManager userManager;
-    private AttachmentManager attachmentManager;
     private StorageService storageService;
 
     private String[] filenames;
@@ -62,16 +61,12 @@ public class StateController {
     public StateController(
         @Autowired AuthorManager authorManager,
         @Autowired PostManager postManager,
-        @Autowired CommentManager commentManager,
         @Autowired UserManager userManager,
-        @Autowired AttachmentManager attachmentManager,
         @Autowired StorageService storageService
     ) {
         this.authorManager = authorManager;
         this.postManager = postManager;
-        this.commentManager = commentManager;
         this.userManager = userManager;
-        this.attachmentManager = attachmentManager;
         this.storageService = storageService;
 
         filenames = new String[] {
@@ -94,18 +89,18 @@ public class StateController {
 
     @GetMapping("/state/reset")
     public String resetState() {
-        attachmentManager.setup(new ArrayList<>());
-        userManager.setup();
-        commentManager.setup(new ArrayList<>());
-        authorManager.setup(new ArrayList<>());
-        postManager.setup(new ArrayList<>(), new ArrayList<>(), authorManager.getAuthors());
+        postManager.reset();
+        userManager.reset();
+        authorManager.reset();
 
         storageService.deleteAll();
         storageService.init();
 
-        authorManager.addAuthor(new Author("John", "Doe", "johndoe1"));
-        authorManager.addAuthor(new Author("Mary", "Jane", "maryjane123"));
-        authorManager.addAuthor(new Author("Bob", "Johnson", "bobby55"));
+        authorManager.setup(List.of(
+            new Author("John", "Doe", "johndoe1"),
+            new Author("Mary", "Jane", "maryjane123"),
+            new Author("Bob", "Johnson", "bobby55")
+        ));
 
         return "redirect:/";
     }
@@ -213,8 +208,8 @@ public class StateController {
             List<MultipartFile> files = stateFiles.getFiles();
             List<MultipartFile> upload = stateFiles.getUpload();
 
-            List<Attachment> attachments = new ArrayList<>();
-            List<Comment> comments = new ArrayList<>();
+            List<AttachmentDTO> attachmentsDTO = new ArrayList<>();
+            List<CommentDTO> commentsDTO = new ArrayList<>();
             List<PostAuthor> postsAuthors = new ArrayList<>();
             List<Author> authors = new ArrayList<>();
             List<Post> posts = new ArrayList<>();
@@ -227,7 +222,7 @@ public class StateController {
                             posts = parseCSV(
                                 Post.class,
                                 Map.ofEntries(
-                                    Map.entry("id", "idCSV"),
+                                    Map.entry("id", "id"),
                                     Map.entry("post_content", "postContent"),
                                     Map.entry("tags", "tags")
                                 ),
@@ -239,7 +234,7 @@ public class StateController {
                             authors = parseCSV(
                                 Author.class,
                                 Map.ofEntries(
-                                    Map.entry("id", "idCSV"),
+                                    Map.entry("id", "id"),
                                     Map.entry("first_name", "firstName"),
                                     Map.entry("last_name", "lastName"),
                                     Map.entry("username", "username")
@@ -260,10 +255,10 @@ public class StateController {
                             break;
 
                         case "Comments.csv":
-                            comments = parseCSV(
-                                Comment.class,
+                            commentsDTO = parseCSV(
+                                CommentDTO.class,
                                 Map.ofEntries(
-                                    Map.entry("id", "idCSV"),
+                                    Map.entry("id", "id"),
                                     Map.entry("username", "username"),
                                     Map.entry("id_post", "idPost"),
                                     Map.entry("comment_content", "commentContent")
@@ -273,8 +268,8 @@ public class StateController {
                             break;
 
                         case "Attachments.csv":
-                            attachments = parseCSV(
-                                Attachment.class,
+                            attachmentsDTO = parseCSV(
+                                AttachmentDTO.class,
                                 Map.ofEntries(
                                     Map.entry("id_post", "idPost"),
                                     Map.entry("filename", "filename")
@@ -292,24 +287,60 @@ public class StateController {
                 throw new StateImportException();
             }
 
+            postManager.reset();
+            userManager.reset();
+            authorManager.reset();
+
+            List<Long> authorsIds = new ArrayList<>();
+            authors.forEach(author -> {
+                authorsIds.add(author.getId());
+                author.setId(null);
+            });
+            List<Author> authorsSaved = authorManager.setup(authors);
+            Map<Long, Author> authorsMapping = new HashMap<>();
+            for (int i = 0; i < authorsIds.size(); i++) {
+                authorsMapping.put(authorsIds.get(i), authorsSaved.get(i));
+            }
+
+            List<Long> postsIds = new ArrayList<>();
+            for (Post post : posts) {
+                Long idPost = post.getId();
+                postsIds.add(idPost);
+                post.setId(null);
+                post.setAuthors(
+                    postsAuthors.stream().filter(postAuthor -> postAuthor.getIdPost().equals(idPost))
+                        .map(postAuthor -> authorsMapping.get(postAuthor.getIdAuthor()))
+                        .collect(Collectors.toList())
+                );
+
+                post.setComments(
+                    commentsDTO.stream().filter(comment -> comment.getIdPost().equals(idPost))
+                        .map(comment -> new Comment(
+                            comment.getCommentContent(),
+                            userManager.createUserIfNew(comment.getUsername())
+                        )).collect(Collectors.toList())
+                );
+
+                post.setAttachments(
+                    attachmentsDTO.stream().filter(attachment -> attachment.getIdPost().equals(idPost))
+                        .map(attachment -> new Attachment(
+                            attachment.getFilename()
+                        )).collect(Collectors.toList())
+                );
+            }
+            List<Post> postsSaved = postManager.setup(posts);
+            Map<Long, Long> postsIdsMapping = new HashMap<>();
+            for (int i = 0; i < postsIds.size(); i++) {
+                postsIdsMapping.put(postsIds.get(i), postsSaved.get(i).getId());
+            }
+
             storageService.deleteAll();
             storageService.init();
 
-            attachmentManager.setup(attachments);
-            userManager.setup();
-            commentManager.setup(comments);
-            authorManager.setup(authors);
-            postManager.setup(posts, postsAuthors, authorManager.getAuthors());
-
             if(upload.size()>1 || upload.size()==1 && upload.get(0).getOriginalFilename().length()>0) {
-                Map<Integer, String> postsIds = new HashMap<>();
-                for (Post post : posts) {
-                    // postsIds.put(post.getIdCSV(), post.getId());
-                    postsIds.put(-1, post.getId().toString());
-                }
                 for(MultipartFile file : upload) {
                     String[] filenameSplit = file.getOriginalFilename().split("_", 2);
-                    storageService.store(file, Long.parseLong(postsIds.get(Integer.parseInt(filenameSplit[0]))), filenameSplit[1]);
+                    storageService.store(file, postsIdsMapping.get(Long.parseLong(filenameSplit[0])), filenameSplit[1]);
                 }
             }
         }

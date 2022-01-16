@@ -76,6 +76,13 @@ public class Post {
         addAttachments(attachments);
     }
 
+    public void addComments(List<Comment> comments) {
+        this.comments.addAll(comments);
+    }
+    public void setComments(List<Comment> comments) {
+        this.comments.clear();
+        addComments(comments);
+    }
     public void addComment(Comment comment) {
         comments.add(comment);
     }
