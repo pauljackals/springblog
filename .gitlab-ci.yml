@@ -32,18 +32,6 @@ build_springblog:
       - build
       - .gradle
 
-test_springblog:
-  stage: test
-  script:
-    - cd ./springblog
-    - gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
-
 # build_converter:
 #   stage: build
 #   script:
@@ -52,18 +40,6 @@ test_springblog:
 #   cache:
 #     key: "$CI_COMMIT_REF_NAME"
 #     policy: push
-#     paths:
-#       - build
-#       - .gradle
-
-# test_converter:
-#   stage: test
-#   script:
-#     - cd ./converterCSVToXML
-#     - gradle check
-#   cache:
-#     key: "$CI_COMMIT_REF_NAME"
-#     policy: pull
 #     paths:
 #       - build
 #       - .gradle
