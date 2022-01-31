@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:14.1-alpine3.15
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER:-}
+      - POSTGRES_DB=${POSTGRES_DB:-}
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  
+  iredmail:
+    image: iredmail/mariadb:stable
+    ports:
+      - ${IREDMAIL_PORT_HTTP:-80}:80
+      - ${IREDMAIL_PORT_HTTPS:-443}:443
+      - ${IREDMAIL_PORT_POP3_TLS:-110}:110
+      - ${IREDMAIL_PORT_POP3_SSL:-995}:995
+      - ${IREDMAIL_PORT_IMAP_TLS:-143}:143
+      - ${IREDMAIL_PORT_IMAP_SSL:-993}:993
+      - ${IREDMAIL_PORT_SMTP:-25}:25
+      - ${IREDMAIL_PORT_SMTP_SSL:-465}:465
+      - ${IREDMAIL_PORT_SMTP_TLS:-587}:587
+    volumes:
+      - iredmail-backup-mysql:/var/vmail/backup/mysql
+      - iredmail-mailboxes:/var/vmail/vmail1
+      - iredmail-mlmmj:/var/vmail/mlmmj
+      - iredmail-mlmmj-archive:/var/vmail/mlmmj-archive
+      - iredmail-imapsieve_copy:/var/vmail/imapsieve_copy
+      - iredmail-custom:/opt/iredmail/custom
+      - iredmail-ssl:/opt/iredmail/ssl
+      - iredmail-mysql:/var/lib/mysql
+      - iredmail-clamav:/var/lib/clamav
+      - iredmail-sa_rules:/var/lib/spamassassin
+      - iredmail-postfix_queue:/var/spool/postfix
+    environment:
+      - HOSTNAME=${IREDMAIL_HOSTNAME}
+      - FIRST_MAIL_DOMAIN=${IREDMAIL_FIRST_MAIL_DOMAIN}
+      - FIRST_MAIL_DOMAIN_ADMIN_PASSWORD=${IREDMAIL_FIRST_MAIL_DOMAIN_ADMIN_PASSWORD}
+      - MLMMJADMIN_API_TOKEN=${IREDMAIL_MLMMJADMIN_API_TOKEN}
+      - ROUNDCUBE_DES_KEY=${IREDMAIL_ROUNDCUBE_DES_KEY}
+
+volumes:
+  postgres-data:
+
+  iredmail-backup-mysql:
+  iredmail-mailboxes:
+  iredmail-mlmmj:
+  iredmail-mlmmj-archive:
+  iredmail-imapsieve_copy:
+  iredmail-custom:
+  iredmail-ssl:
+  iredmail-mysql:
+  iredmail-clamav:
+  iredmail-sa_rules:
+  iredmail-postfix_queue:
