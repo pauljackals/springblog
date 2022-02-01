@@ -59,4 +59,13 @@ public class AuthorManager {
             return null;
         }
     }
+    public Author getAuthorByEmail(String email) {
+        Optional<Author> author = authorRepository.findByEmail(email);
+        if(author.isPresent()) {
+            return author.get();
+        
+        } else {
+            return null;
+        }
+    }
 }

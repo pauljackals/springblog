@@ -97,9 +97,9 @@ public class StateController {
         storageService.init();
 
         authorManager.setup(List.of(
-            new Author("John", "Doe", "johndoe1"),
-            new Author("Mary", "Jane", "maryjane123"),
-            new Author("Bob", "Johnson", "bobby55")
+            new Author("John", "Doe", "johndoe1", "johndoe1@example.com", "123"),
+            new Author("Mary", "Jane", "maryjane123", "maryjane123@example.com", "123"),
+            new Author("Bob", "Johnson", "bobby55", "bobby55@example.com", "123")
         ));
 
         return "redirect:/";
@@ -112,13 +112,13 @@ public class StateController {
         List<Author> authors = authorManager.getAuthors();
 
         StringBuilder postsCSVBuilder = new StringBuilder("id,post_content,tags\n");
-        StringBuilder authorsCSVBuilder = new StringBuilder("id,first_name,last_name,username\n");
+        StringBuilder authorsCSVBuilder = new StringBuilder("id,first_name,last_name,username,email,password\n");
         StringBuilder postsAuthorsCSVBuilder = new StringBuilder("id_post,id_author\n");
         StringBuilder commentsCSVBuilder = new StringBuilder("id,username,id_post,comment_content\n");
         StringBuilder attachmentsCSVBuilder = new StringBuilder("id_post,filename\n");
 
         for (Author author : authors) {
-            authorsCSVBuilder.append(String.format("%d,%s,%s,%s\n", author.getId(), author.getFirstName(), author.getLastName(), author.getUsername()));
+            authorsCSVBuilder.append(String.format("%d,%s,%s,%s,%s,%s\n", author.getId(), author.getFirstName(), author.getLastName(), author.getUsername(), author.getEmail(), author.getPassword()));
         }
         for(Post post : posts) {
             Long idPost = post.getId();
@@ -237,7 +237,9 @@ public class StateController {
                                     Map.entry("id", "id"),
                                     Map.entry("first_name", "firstName"),
                                     Map.entry("last_name", "lastName"),
-                                    Map.entry("username", "username")
+                                    Map.entry("username", "username"),
+                                    Map.entry("email", "email"),
+                                    Map.entry("password", "password")
                                 ),
                                 file
                             );

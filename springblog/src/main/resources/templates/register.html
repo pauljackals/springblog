@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <title>Register</title>
+</head>
+<body>
+    <th:block th:insert="fragments/navbar"></th:block>
+    <div class="post-details">
+        <div class="form-comment">
+            <form action="#" th:action="@{/register}" method="post" th:object="${author}">
+                <span class="error-message" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></span>
+                <input type="text" th:field="*{firstName}" placeholder="first name">
+
+                <span class="error-message" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></span>
+                <input type="text" th:field="*{lastName}" placeholder="last name">
+
+                <span class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+                <input type="text" th:field="*{username}" placeholder="username">
+
+                <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                <input type="text" th:field="*{email}" placeholder="email">
+
+                <span class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                <input type="password" th:field="*{password}" placeholder="password">
+    
+                <th:block th:object="${authorExtras}">
+                    <input type="password" th:field="*{passwordRepeat}" placeholder="repeat password">
+                </th:block>
+    
+                <input type="submit" value="register">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

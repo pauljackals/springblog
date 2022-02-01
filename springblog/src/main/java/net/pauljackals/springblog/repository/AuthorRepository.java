@@ -11,5 +11,6 @@ import net.pauljackals.springblog.domain.Author;
 @Repository
 public interface AuthorRepository extends CrudRepository<Author, Long> {
     public Optional<Author> findByUsername(String username);
+    public Optional<Author> findByEmail(String email);
     public List<Author> findByUsernameContaining(String usernamePart);
 }

@@ -12,9 +12,11 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import net.pauljackals.springblog.domain.Author;
 import net.pauljackals.springblog.domain.Post;
+import net.pauljackals.springblog.domain.helpers.AuthorExtras;
 import net.pauljackals.springblog.domain.helpers.SearchSettings;
 import net.pauljackals.springblog.exceptions.ResourceNotFoundException;
 import net.pauljackals.springblog.service.AuthorManager;
@@ -80,5 +82,45 @@ public class AuthorController {
             Map.entry("posts", posts)
         ));
         return "author";
+    }
+
+    @GetMapping("/register")
+    public String registerForm(Model model) {
+        model.addAllAttributes(Map.ofEntries(
+            Map.entry("author", new Author()),
+            Map.entry("authorExtras", new AuthorExtras())
+        ));
+
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String register(
+        @Valid @ModelAttribute Author author,
+        Errors errors,
+        @Valid @ModelAttribute AuthorExtras authorExtras,
+        Errors errorsExtras,
+        Model model
+    ) {
+        if(author.getPassword()!=null && !author.getPassword().equals(authorExtras.getPasswordRepeat())) {
+            errors.rejectValue("password", "PASSWORDS_MISMATCH", "passwords do not match");
+        }
+
+        if(!errors.hasErrors() && !errorsExtras.hasErrors()) {
+            if(authorManager.getAuthorByUsername(author.getUsername()) != null) {
+                errors.rejectValue("username", "USERNAME_TAKEN", "username not available");
+            }
+            if(authorManager.getAuthorByEmail(author.getEmail()) != null) {
+                errors.rejectValue("email", "EMAIL_TAKEN", "email not available");
+            }
+        }
+
+        if(errors.hasErrors() || errorsExtras.hasErrors()){
+            return "register";
+        }
+
+        authorManager.addAuthor(author);
+
+        return "redirect:/";
     }
 }
