@@ -6,6 +6,9 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -26,13 +29,19 @@ import net.pauljackals.springblog.service.PostManager;
 public class AuthorController {
     private AuthorManager authorManager;
     private PostManager postManager;
+    private JavaMailSender emailSender;
+
+    @Value("${spring.mail.username}")
+    private String emailSenderName;
 
     public AuthorController(
         @Autowired AuthorManager authorManager,
-        @Autowired PostManager postManager
+        @Autowired PostManager postManager,
+        @Autowired JavaMailSender emailSender
     ) {
         this.authorManager = authorManager;
         this.postManager = postManager;
+        this.emailSender = emailSender;
     }
 
     @GetMapping("/author")
@@ -120,6 +129,16 @@ public class AuthorController {
         }
 
         authorManager.addAuthor(author);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(author.getEmail());
+        mailMessage.setFrom(emailSenderName);
+        mailMessage.setSubject("Springblog account registration");
+        mailMessage.setText(String.format("Hello, %s %s!\n\nWelcome to Springblog", author.getFirstName(), author.getLastName()));
+        try {
+            emailSender.send(mailMessage);
+        } catch(Exception e) {
+        }
 
         return "redirect:/";
     }
