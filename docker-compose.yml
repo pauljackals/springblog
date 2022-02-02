@@ -9,6 +9,9 @@ services:
       - ${POSTGRES_PORT:-5432}:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    profiles:
+      - development
+      - production
   
   iredmail:
     image: iredmail/mariadb:stable
@@ -40,6 +43,29 @@ services:
       - FIRST_MAIL_DOMAIN_ADMIN_PASSWORD=${IREDMAIL_FIRST_MAIL_DOMAIN_ADMIN_PASSWORD}
       - MLMMJADMIN_API_TOKEN=${IREDMAIL_MLMMJADMIN_API_TOKEN}
       - ROUNDCUBE_DES_KEY=${IREDMAIL_ROUNDCUBE_DES_KEY}
+    profiles:
+      - development
+      - production
+  
+  springblog:
+    build: ./springblog
+    ports:
+      - ${SERVER_PORT:-80}:8080
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=postgres
+      - IREDMAIL_HOSTNAME=iredmail
+      - IREDMAIL_FIRST_MAIL_DOMAIN=${IREDMAIL_FIRST_MAIL_DOMAIN}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - IREDMAIL_NOREPLY_PASSWORD=${IREDMAIL_NOREPLY_PASSWORD}
+    depends_on:
+      - postgres
+      - iredmail
+    volumes:
+      - springblog-upload:/opt/springblog/upload
+    profiles:
+      - production
 
 volumes:
   postgres-data:
@@ -55,3 +81,4 @@ volumes:
   iredmail-clamav:
   iredmail-sa_rules:
   iredmail-postfix_queue:
+  springblog-upload:
