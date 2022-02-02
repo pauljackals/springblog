@@ -24,7 +24,7 @@ build_springblog:
   stage: build
   script:
     - cd ./springblog
-    - gradle --build-cache assemble
+    - ./gradlew --build-cache assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
