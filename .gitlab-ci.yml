@@ -16,24 +16,24 @@ image: docker:19.03.12
 # isolated from any previous builds.
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  DOCKER_HOST: tcp://127.0.0.1:2375/
+  DOCKER_HOST: tcp://172.17.0.1:2375/
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-build_springblog:
-  stage: build
-  script:
-    - apk update && apk add openjdk11
-    - cd ./springblog
-    - chmod +x ./gradlew
-    - ./gradlew --build-cache assemble
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
+# build_springblog:
+#   stage: build
+#   script:
+#     - apk update && apk add openjdk11
+#     - cd ./springblog
+#     - chmod +x ./gradlew
+#     - ./gradlew --build-cache assemble
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: push
+#     paths:
+#       - build
+#       - .gradle
 
 # build_converter:
 #   stage: build
