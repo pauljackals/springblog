@@ -23,7 +23,7 @@ before_script:
 build_springblog:
   stage: build
   script:
-    - sudo apt-get install openjdk-11-jdk
+    - apt-get install openjdk-11-jdk
     - cd ./springblog
     - chmod +x ./gradlew
     - ./gradlew --build-cache assemble
