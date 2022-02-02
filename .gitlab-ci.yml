@@ -23,7 +23,7 @@ before_script:
 build_springblog:
   stage: build
   script:
-    - apk update && apk add openjdk-11-jdk
+    - apk update && apk add openjdk11
     - cd ./springblog
     - chmod +x ./gradlew
     - ./gradlew --build-cache assemble
