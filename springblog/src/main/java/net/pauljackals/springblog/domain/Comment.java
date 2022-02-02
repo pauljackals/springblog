@@ -20,7 +20,7 @@ public class Comment {
     private Long id;
 
     @NotEmpty(message = "comment must not be empty")
-    @Size(max = 512, message = "comment must be no longer than {max} characters")
+    @Size(max = 1024, message = "comment must be no longer than {max} characters")
     private String commentContent;
     
     @ManyToOne
