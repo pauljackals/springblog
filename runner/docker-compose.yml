@@ -10,7 +10,7 @@ services:
       - REGISTRATION_TOKEN=${REGISTRATION_TOKEN}
       - CI_SERVER_URL=https://gitlab.com/
       - RUNNER_NAME=Local GitLab Runner
-      - DOCKER_IMAGE=gradle:alpine
+      - DOCKER_IMAGE=docker:19.03.12
       - RUNNER_EXECUTOR=docker
 volumes:
   config:
