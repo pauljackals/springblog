@@ -1,7 +1,7 @@
 FROM openjdk:11-jdk AS builder
 WORKDIR /opt/springblog
 COPY . .
-RUN ./gradlew bootJar
+RUN chmod +x ./gradlew && ./gradlew bootJar
 
 FROM openjdk:11-jdk
 WORKDIR /opt/springblog
