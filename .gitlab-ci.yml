@@ -44,18 +44,19 @@ build_springblog:
 #       - build
 #       - .gradle
 
-# deploy:
-#   stage: deploy
-#   script:
-#     - 'which ssh-agent || ( apk update && apk add openssh-client )'
-#     - eval $(ssh-agent -s)
-#     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -q -
-#     - mkdir -p ~/.ssh
-#     - chmod 700 ~/.ssh
-#     - ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
-#     - chmod 644 ~/.ssh/known_hosts
-#     - cd ./springblog
-#     - gradle bootJar
-#     - ssh $DEPLOY_USER@$DEPLOY_HOST "./stop.sh"
-#     - scp ./build/libs/springblog-0.0.1-SNAPSHOT.jar $DEPLOY_USER@$DEPLOY_HOST:~
-#     - ssh $DEPLOY_USER@$DEPLOY_HOST "./run.sh"
+deploy:
+  stage: deploy
+  script:
+    - 'which ssh-agent || ( apk update && apk add openssh-client )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -q -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - cd ./springblog
+    - docker build -t springblog_springblog .
+    - docker save -o ./springblog_springblog.tar springblog_springblog
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/springblog && docker-compose down"
+    - scp ./springblog_springblog.tar ../.env.sample ../docker-compose.yml $DEPLOY_USER@$DEPLOY_HOST:~/springblog
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/springblog && docker load -i ./springblog_springblog.tar && docker-compose --profile production -d"
