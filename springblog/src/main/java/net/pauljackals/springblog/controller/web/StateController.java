@@ -96,12 +96,6 @@ public class StateController {
         storageService.deleteAll();
         storageService.init();
 
-        authorManager.setup(List.of(
-            new Author("John", "Doe", "johndoe1", "johndoe1@example.com", "123"),
-            new Author("Mary", "Jane", "maryjane123", "maryjane123@example.com", "123"),
-            new Author("Bob", "Johnson", "bobby55", "bobby55@example.com", "123")
-        ));
-
         return "redirect:/";
     }
 
