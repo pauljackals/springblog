@@ -87,18 +87,6 @@ public class StateController {
         return "state";
     }
 
-    @GetMapping("/state/reset")
-    public String resetState() {
-        postManager.reset();
-        userManager.reset();
-        authorManager.reset();
-
-        storageService.deleteAll();
-        storageService.init();
-
-        return "redirect:/";
-    }
-
     @GetMapping("/state/download")
     @ResponseBody
     public ResponseEntity<Resource> downloadState() {
