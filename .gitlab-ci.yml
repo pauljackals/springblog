@@ -14,9 +14,15 @@ image: docker:19.03.12
 # is usually a priority over speed in CI environments. Using a fresh
 # runtime for each build is more reliable since the runtime is completely
 # isolated from any previous builds.
+
+services:
+  - name: docker:19.03.12-dind
+    alias: docker
+    command: [ "--tls=false" ]
+
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  DOCKER_HOST: tcp://172.17.0.1:2375/
+  DOCKER_HOST: tcp://docker:2375/
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
