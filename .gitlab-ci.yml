@@ -8,38 +8,29 @@
 # https://gradle.org/
 # https://github.com/gradle/gradle
 
-image: docker:20
+image: gradle:alpine
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
 # runtime for each build is more reliable since the runtime is completely
 # isolated from any previous builds.
-
-services:
-  - name: docker:20-dind
-    alias: docker
-    command: [ "--tls=false" ]
-
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  DOCKER_HOST: tcp://docker:2375
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-# build_springblog:
-#   stage: build
-#   script:
-#     - apk update && apk add openjdk11
-#     - cd ./springblog
-#     - chmod +x ./gradlew
-#     - ./gradlew --build-cache assemble
-#   cache:
-#     key: "$CI_COMMIT_REF_NAME"
-#     policy: push
-#     paths:
-#       - build
-#       - .gradle
+build_springblog:
+  stage: build
+  script:
+    - cd ./springblog
+    - gradle --build-cache assemble
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
 
 # build_converter:
 #   stage: build
@@ -63,9 +54,4 @@ deploy:
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - cd ./springblog
-    - docker build -t springblog_springblog .
-    - docker save -o ./springblog_springblog.tar springblog_springblog
-    - ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/springblog && docker-compose down"
-    - scp ./springblog_springblog.tar ../.env.sample ../docker-compose.yml $DEPLOY_USER@$DEPLOY_HOST:~/springblog
-    - ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/springblog && docker load -i ./springblog_springblog.tar && docker-compose --profile production -d"
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "docker-compose down && cd ./springblog && git pull && docker-compose --profile production up -d"
