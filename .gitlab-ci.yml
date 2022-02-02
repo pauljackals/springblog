@@ -54,4 +54,4 @@ deploy:
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - ssh $DEPLOY_USER@$DEPLOY_HOST "docker-compose down && cd ./springblog && git pull && docker-compose --profile production up -d"
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "cd ./springblog && docker-compose down && git pull && docker-compose --profile production up -d"
