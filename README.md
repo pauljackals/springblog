@@ -1,2 +1,0 @@
-# Paweł Sakaluk - Projekt
-
